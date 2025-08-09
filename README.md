@@ -1,0 +1,2 @@
+# Minnt-SAT-solver
+PRUEBA SAT SOLVER COMPACTO 
