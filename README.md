@@ -23,7 +23,7 @@ Minnt SAT Solver es un solucionador SAT basado en Java que implementa el algorit
 ## Instalación
 
 1. Clonar el repositorio:
-   git clone https://github.com/tuusuario/minnt-sat-solver.git
+   git clone [https://github.com/tuusuario/minnt-sat-solver](https://github.com/Minnt-D/Minnt-SAT-solver).git
 cd minnt-sat-solver
 2. Compilar con Maven:
 3. Ejecutar:
