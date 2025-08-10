@@ -24,7 +24,6 @@ public class MinntSatSolverCLI {
             .split("\\s+");
     int numVars = Integer.parseInt(headerParts[2]);
 
-    // Validar que todas las variables estén en rango
     for (List<Integer> clause : clauses) {
       for (int lit : clause) {
         int var = Math.abs(lit);
@@ -71,7 +70,6 @@ public class MinntSatSolverCLI {
           try {
             clause.add(Integer.parseInt(p));
           } catch (NumberFormatException e) {
-            // Ignorar tokens no numéricos
           }
         }
       }
@@ -114,7 +112,6 @@ public class MinntSatSolverCLI {
         changed = true;
       }
 
-      // 2. Eliminación de literales puros
       List<Integer> pureLiterals = findPureLiterals(context);
       if (!pureLiterals.isEmpty()) {
         for (int lit : pureLiterals) {
@@ -123,11 +120,10 @@ public class MinntSatSolverCLI {
         changed = true;
       }
 
-      // Verificar estado actual
       int status = checkClausesStatus(context);
-      if (status == 1) {  // SAT
+      if (status == 1) {
         return context.assignment;
-      } else if (status == -1) {  // UNSAT
+      } else if (status == -1) {
         return null;
       }
 
@@ -136,19 +132,17 @@ public class MinntSatSolverCLI {
       }
     }
 
-    // Seleccionar variable no asignada
+
     int var = selectUnassignedVariable(context);
     if (var == -1) {
-      return null;  // No debería ocurrir
+      return null;
     }
 
-    // Probar asignación TRUE
     DPLLContext contextTrue = context.clone();
     contextTrue.assignment[var] = true;
     Boolean[] result = dpll(contextTrue);
     if (result != null) return result;
 
-    // Probar asignación FALSE
     DPLLContext contextFalse = context.clone();
     contextFalse.assignment[var] = false;
     result = dpll(contextFalse);
@@ -182,7 +176,7 @@ public class MinntSatSolverCLI {
   }
 
   static List<Integer> findPureLiterals(DPLLContext context) {
-    int[] signs = new int[context.numVars]; // 0: no visto, 1: solo positivo, -1: solo negativo, 2: mixto
+    int[] signs = new int[context.numVars];
     List<Integer> pureLiterals = new ArrayList<>();
 
     for (List<Integer> clause : context.clauses) {
@@ -249,13 +243,13 @@ public class MinntSatSolverCLI {
 
       if (!clauseSatisfied) {
         if (!hasUnassigned) {
-          return -1; // UNSAT
+          return -1;
         }
         allSatisfied = false;
       }
     }
 
-    return allSatisfied ? 1 : 0; // 1: SAT, 0: Indeterminado
+    return allSatisfied ? 1 : 0; 
   }
 
   static boolean isClauseSatisfied(List<Integer> clause, Boolean[] assignment) {
@@ -291,3 +285,4 @@ public class MinntSatSolverCLI {
 """);
   }
 }
+
