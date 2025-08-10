@@ -1,7 +1,3 @@
-// MinntSATSolver.java
-// Compilar: javac MinntSATSolver.java
-// Ejecutar:   java MinntSATSolver
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
@@ -16,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MinntSATSolver extends JFrame {
-  // UI components
   private JTextArea editor;
   private JTextArea resultArea;
   private JProgressBar progressBar;
@@ -28,7 +23,7 @@ public class MinntSATSolver extends JFrame {
   public MinntSATSolver() {
     setTitle("Minnt SAT Solver");
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    setExtendedState(JFrame.MAXIMIZED_BOTH); // start maximized
+    setExtendedState(JFrame.MAXIMIZED_BOTH); 
     buildUI();
     applyTheme();
     addWindowListener(new WindowAdapter() {
@@ -40,7 +35,6 @@ public class MinntSATSolver extends JFrame {
   }
 
   private void buildUI() {
-    // Menu bar
     JMenuBar menuBar = new JMenuBar();
     JMenu fileMenu = new JMenu("Archivo");
     JMenuItem openItem = new JMenuItem("Abrir CNF...");
@@ -70,11 +64,9 @@ public class MinntSATSolver extends JFrame {
 
     setJMenuBar(menuBar);
 
-    // Main panel split: editor (left) and results (right)
     JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     split.setResizeWeight(0.55);
 
-    // Left: editor with line numbers
     editor = new JTextArea();
     editor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
     editor.setTabSize(4);
@@ -85,7 +77,6 @@ public class MinntSATSolver extends JFrame {
     leftPanel.add(new JLabel("Editor CNF"), BorderLayout.NORTH);
     leftPanel.add(editorScroll, BorderLayout.CENTER);
 
-    // Buttons under editor
     JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 6));
     JButton loadBtn = new JButton("Abrir .cnf");
     loadBtn.addActionListener(e -> loadCNFFromFile());
@@ -98,7 +89,6 @@ public class MinntSATSolver extends JFrame {
     btnPanel.add(clearBtn);
     leftPanel.add(btnPanel, BorderLayout.SOUTH);
 
-    // Right: results
     resultArea = new JTextArea();
     resultArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
     resultArea.setEditable(false);
@@ -108,7 +98,6 @@ public class MinntSATSolver extends JFrame {
     rightPanel.add(new JLabel("Resultado"), BorderLayout.NORTH);
     rightPanel.add(resultScroll, BorderLayout.CENTER);
 
-    // Bottom area: progress and status
     JPanel bottom = new JPanel(new BorderLayout(6,6));
     progressBar = new JProgressBar();
     progressBar.setIndeterminate(false);
@@ -124,13 +113,11 @@ public class MinntSATSolver extends JFrame {
     getContentPane().add(split, BorderLayout.CENTER);
     getContentPane().add(bottom, BorderLayout.SOUTH);
 
-    // Insert example content
     editor.setText("// Example DIMACS (comments with // or c are ignored)\n" +
             "p cnf 3 2\n" +
             "1 -3 0\n" +
             "2 3 -1 0\n");
 
-    // keyboard shortcut: Ctrl+O load, Ctrl+R run
     editor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK), "open");
     editor.getActionMap().put("open", new AbstractAction(){ public void actionPerformed(ActionEvent e){ loadCNFFromFile(); }});
     editor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK), "run");
@@ -150,7 +137,6 @@ public class MinntSATSolver extends JFrame {
     resultArea.setForeground(fg);
     statusLabel.setBackground(accent);
     statusLabel.setForeground(Color.white);
-    // update other components recursively
     SwingUtilities.updateComponentTreeUI(this);
   }
 
@@ -198,12 +184,10 @@ public class MinntSATSolver extends JFrame {
 
   private void startSolve() {
     if (solveButton.getText().equals("Cancelar")) {
-      // request cancel
       cancelRequested.set(true);
       statusLabel.setText("Cancelando...");
       return;
     }
-    // start solve in background
     solveButton.setText("Cancelar");
     progressBar.setIndeterminate(true);
     progressBar.setVisible(true);
@@ -227,7 +211,6 @@ public class MinntSATSolver extends JFrame {
     String text = editor.getText();
     long t0 = System.nanoTime();
 
-    // find header
     String header = null;
     for (String line : text.split("\\R")) {
       String l = line.trim();
@@ -254,7 +237,6 @@ public class MinntSATSolver extends JFrame {
 
     List<int[]> clauses = parseDimacsToIntList(text);
 
-    // run solver
     boolean[] solution = solveDPLL(clauses, numVars);
 
     double elapsed = (System.nanoTime() - t0) / 1e9;
@@ -263,7 +245,6 @@ public class MinntSATSolver extends JFrame {
     SwingUtilities.invokeLater(() -> {
       resultArea.setText("");
       if (solution != null) {
-        // DIMACS style assignment
         StringBuilder assignSb = new StringBuilder();
         for (int i = 1; i <= nv; i++) {
           assignSb.append(solution[i] ? i : -i);
@@ -282,9 +263,6 @@ public class MinntSATSolver extends JFrame {
     });
   }
 
-  // --------------------------
-  // Parsing helpers
-  // --------------------------
   private List<int[]> parseDimacsToIntList(String dimacs) {
     List<int[]> out = new ArrayList<>();
     for (String raw : dimacs.split("\\R")) {
@@ -309,17 +287,11 @@ public class MinntSATSolver extends JFrame {
     return out;
   }
 
-  // --------------------------
-  // DPLL solver implementation (iterative recursion via recursion but optimized)
-  // --------------------------
   private boolean[] solveDPLL(List<int[]> clausesList, int numVars) {
-    // convert to mutable list
     List<int[]> clauses = new ArrayList<>(clausesList);
 
-    // initial assignment array index 1..numVars
     Boolean[] assignment = new Boolean[numVars + 1];
 
-    // call recursive solver
     return dpllRecursive(clauses, assignment, numVars) ? toPrimitiveBool(assignment) : null;
   }
 
@@ -332,7 +304,6 @@ public class MinntSATSolver extends JFrame {
   private boolean dpllRecursive(List<int[]> clauses, Boolean[] assignment, int numVars) {
     if (cancelRequested.get()) return false;
 
-    // simplify with current assignment
     List<int[]> simplified = new ArrayList<>();
     for (int[] clause : clauses) {
       boolean satisfied = false;
@@ -346,17 +317,16 @@ public class MinntSATSolver extends JFrame {
           if ((lit > 0 && val) || (lit < 0 && !val)) {
             satisfied = true;
             break;
-          } // else literal false -> skip
+          }
         }
       }
       if (satisfied) continue;
-      if (newClause.isEmpty()) return false; // conflict
+      if (newClause.isEmpty()) return false;
       simplified.add(newClause.stream().mapToInt(i->i).toArray());
     }
 
-    if (simplified.isEmpty()) return true; // satisfied
+    if (simplified.isEmpty()) return true; 
 
-    // unit propagation
     for (int[] c : simplified) {
       if (c.length == 1) {
         int lit = c[0];
@@ -375,7 +345,6 @@ public class MinntSATSolver extends JFrame {
       }
     }
 
-    // pure literal elimination
     Map<Integer, Integer> polarity = new HashMap<>();
     for (int[] c : simplified) for (int lit : c) {
       int v = Math.abs(lit);
@@ -395,7 +364,6 @@ public class MinntSATSolver extends JFrame {
       }
     }
 
-    // choose variable heuristic: frequency
     Map<Integer, Integer> freq = new HashMap<>();
     for (int[] c : simplified) for (int lit : c) {
       int v = Math.abs(lit);
@@ -404,7 +372,6 @@ public class MinntSATSolver extends JFrame {
     if (freq.isEmpty()) return true;
     int choose = Collections.max(freq.entrySet(), Map.Entry.comparingByValue()).getKey();
 
-    // branch
     for (boolean val : new boolean[]{true, false}) {
       assignment[choose] = val;
       boolean ok = dpllRecursive(simplified, assignment, numVars);
@@ -415,16 +382,10 @@ public class MinntSATSolver extends JFrame {
     return false;
   }
 
-  // --------------------------
-  // Helpers
-  // --------------------------
   private void showResultSync(String text) {
     resultArea.setText(text);
   }
 
-  // --------------------------
-  // Line number view for editor
-  // --------------------------
   static class LineNumberView extends JComponent implements DocumentListener {
     private final JTextArea textArea;
     private final FontMetrics fontMetrics;
@@ -455,7 +416,6 @@ public class MinntSATSolver extends JFrame {
           g.drawString(num, x, y + fontMetrics.getAscent());
         }
       } catch (Exception ex) {
-        // ignore
       }
     }
     @Override public void insertUpdate(DocumentEvent e) { repaint(); }
@@ -463,9 +423,6 @@ public class MinntSATSolver extends JFrame {
     @Override public void changedUpdate(DocumentEvent e) { repaint(); }
   }
 
-  // --------------------------
-  // Main
-  // --------------------------
   public static void main(String[] args) {
     SwingUtilities.invokeLater(() -> {
       MinntSATSolver app = new MinntSATSolver();
@@ -473,3 +430,4 @@ public class MinntSATSolver extends JFrame {
     });
   }
 }
+
