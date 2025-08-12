@@ -430,4 +430,3 @@ public class MinntSATSolver extends JFrame {
     });
   }
 }
-
