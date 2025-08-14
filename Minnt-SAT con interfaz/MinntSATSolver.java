@@ -354,7 +354,7 @@ public class MinntSATSolver extends JFrame {
     });
   }
 
-  // Cambia crearBotonVSCode para soportar bordes redondeados y sombra en MINNT
+  // Crea botones con estilo neumórfico para MINNT
   private JButton crearBotonVSCode(String texto, int tecla) {
     JButton btn = new JButton(texto);
     btn.setFont(new Font(FUENTE_UI, Font.PLAIN, 11));
@@ -367,32 +367,10 @@ public class MinntSATSolver extends JFrame {
       String atajo = tecla == KeyEvent.VK_F5 ? "F5" : "Ctrl+" + KeyEvent.getKeyText(tecla);
       btn.setToolTipText(texto + " (" + atajo + ")");
     }
-    // Bordes redondeados y sombra para MINNT
-    if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
-      btn.setBorder(BorderFactory.createCompoundBorder(
-        new javax.swing.border.LineBorder(new Color(255,122,0,80), 2, true),
-        BorderFactory.createEmptyBorder(2, 8, 2, 8)
-      ));
-      btn.setBackground(temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_ACENTO : MINNT_CLARO_ACENTO);
-      btn.setForeground(temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_TEXTO : MINNT_CLARO_TEXTO);
-      btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
-        @Override
-        public void paint(Graphics g, JComponent c) {
-          Graphics2D g2 = (Graphics2D) g.create();
-          g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-          g2.setColor(btn.getBackground());
-          g2.fillRoundRect(0, 0, btn.getWidth(), btn.getHeight(), 18, 18);
-          g2.setColor(new Color(0,0,0,30));
-          g2.fillRoundRect(3, 3, btn.getWidth()-6, btn.getHeight()-6, 14, 14);
-          super.paint(g2, c);
-          g2.dispose();
-        }
-      });
-    }
     return btn;
   }
 
-  // Cambia crearBotonIcono para usar iconos dibujados
+  // Crea botones de icono con efectos neumórficos
   private JButton crearBotonIcono(String tooltip, String tipo) {
     JButton btn = new JButton();
     btn.setToolTipText(tooltip);
@@ -406,13 +384,33 @@ public class MinntSATSolver extends JFrame {
       public void paintIcon(Component c, Graphics g, int x, int y) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Efectos neumórficos para MINNT
+        if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+          Color fondo = temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_PANEL : MINNT_CLARO_PANEL;
+          Color sombra1 = temaActual == Tema.MINNT_OSCURO ? new Color(0, 0, 0, 40) : new Color(0, 0, 0, 20);
+          Color sombra2 = temaActual == Tema.MINNT_OSCURO ? new Color(255, 255, 255, 10) : new Color(255, 255, 255, 60);
+
+          // Fondo del botón
+          g2.setColor(fondo);
+          g2.fillRoundRect(x+2, y+2, 20, 16, 8, 8);
+
+          // Sombra externa
+          g2.setColor(sombra1);
+          g2.fillRoundRect(x+3, y+3, 20, 16, 8, 8);
+
+          // Luz interna
+          g2.setColor(sombra2);
+          g2.fillRoundRect(x+1, y+1, 20, 16, 8, 8);
+        }
+
         if (tipo.equals("Copiar")) {
           g2.setColor(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? Color.WHITE : Color.BLACK);
-          g2.drawRect(x+6, y+6, 12, 12);
-          g2.drawRect(x+10, y+2, 8, 8);
+          g2.drawRect(x+8, y+8, 8, 8);
+          g2.drawRect(x+10, y+6, 8, 8);
         } else if (tipo.equals("Guardar")) {
           g2.setColor(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? Color.WHITE : Color.BLACK);
-          g2.fillRect(x+6, y+6, 12, 12);
+          g2.fillRect(x+8, y+8, 8, 8);
           g2.setColor(temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO ? MINNT_OSCURO_ACENTO : VS_OSCURO_ACENTO);
           g2.fillRect(x+10, y+12, 4, 4);
         }
@@ -444,188 +442,321 @@ public class MinntSATSolver extends JFrame {
     };
   }
 
-  // Aplica fondo y borde a paneles principales y JSplitPane
+  // Aplica tema con efectos neumórficos completos
   private void aplicarTema(Tema t) {
     Color fondo, fondoPanel, fondoBarra, texto, acento, fondoLinea, textoLinea, borde, fondoBoton, hoverBoton;
 
     switch (t) {
-        case OSCURO -> {
-            fondo = VS_OSCURO_FONDO; fondoPanel = VS_OSCURO_PANEL; fondoBarra = VS_OSCURO_BARRA;
-            texto = VS_OSCURO_TEXTO; acento = VS_OSCURO_ACENTO; fondoLinea = VS_OSCURO_LINEA_FONDO;
-            textoLinea = VS_OSCURO_LINEA_TEXTO; borde = VS_OSCURO_BORDE;
-            fondoBoton = VS_OSCURO_BOTON; hoverBoton = VS_OSCURO_BOTON_HOVER;
-        }
-        case CLARO -> {
-            fondo = VS_CLARO_FONDO; fondoPanel = VS_CLARO_PANEL; fondoBarra = VS_CLARO_BARRA;
-            texto = VS_CLARO_TEXTO; acento = VS_CLARO_ACENTO; fondoLinea = VS_CLARO_LINEA_FONDO;
-            textoLinea = VS_CLARO_LINEA_TEXTO; borde = VS_CLARO_BORDE;
-            fondoBoton = VS_CLARO_BOTON; hoverBoton = VS_CLARO_BOTON_HOVER;
-        }
-        case MINNT_OSCURO -> {
-            fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
-            texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
-            textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
-            fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
-        }
-        case MINNT_CLARO -> {
-            fondo = MINNT_CLARO_FONDO; fondoPanel = MINNT_CLARO_PANEL; fondoBarra = MINNT_CLARO_PANEL;
-            texto = MINNT_CLARO_TEXTO; acento = MINNT_CLARO_ACENTO; fondoLinea = MINNT_CLARO_LINEA_FONDO;
-            textoLinea = MINNT_CLARO_LINEA_TEXTO; borde = MINNT_CLARO_ACENTO;
-            fondoBoton = MINNT_CLARO_ACENTO; hoverBoton = MINNT_CLARO_ACENTO.darker();
-        }
-        default -> {
-            fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
-            texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
-            textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
-            fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
-        }
+      case OSCURO -> {
+        fondo = VS_OSCURO_FONDO; fondoPanel = VS_OSCURO_PANEL; fondoBarra = VS_OSCURO_BARRA;
+        texto = VS_OSCURO_TEXTO; acento = VS_OSCURO_ACENTO; fondoLinea = VS_OSCURO_LINEA_FONDO;
+        textoLinea = VS_OSCURO_LINEA_TEXTO; borde = VS_OSCURO_BORDE;
+        fondoBoton = VS_OSCURO_BOTON; hoverBoton = VS_OSCURO_BOTON_HOVER;
+      }
+      case CLARO -> {
+        fondo = VS_CLARO_FONDO; fondoPanel = VS_CLARO_PANEL; fondoBarra = VS_CLARO_BARRA;
+        texto = VS_CLARO_TEXTO; acento = VS_CLARO_ACENTO; fondoLinea = VS_CLARO_LINEA_FONDO;
+        textoLinea = VS_CLARO_LINEA_TEXTO; borde = VS_CLARO_BORDE;
+        fondoBoton = VS_CLARO_BOTON; hoverBoton = VS_CLARO_BOTON_HOVER;
+      }
+      case MINNT_OSCURO -> {
+        fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
+        texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
+        textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
+        fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
+      }
+      case MINNT_CLARO -> {
+        fondo = MINNT_CLARO_FONDO; fondoPanel = MINNT_CLARO_PANEL; fondoBarra = MINNT_CLARO_PANEL;
+        texto = MINNT_CLARO_TEXTO; acento = MINNT_CLARO_ACENTO; fondoLinea = MINNT_CLARO_LINEA_FONDO;
+        textoLinea = MINNT_CLARO_LINEA_TEXTO; borde = MINNT_CLARO_ACENTO;
+        fondoBoton = MINNT_CLARO_ACENTO; hoverBoton = MINNT_CLARO_ACENTO.darker();
+      }
+      default -> {
+        fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
+        texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
+        textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
+        fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
+      }
     }
 
-    // Aplica colores recursivamente
+    // Aplica colores recursivamente con efectos especiales
     aplicarColoresRecursivo(getContentPane(), fondo, fondoPanel, fondoBarra, texto, acento,
-        fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
+            fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
 
-    // Paneles principales y JSplitPane
-    for (Component comp : getContentPane().getComponents()) {
-        if (comp instanceof JPanel p) {
-            p.setBackground(fondoPanel);
-            if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
-                p.setBorder(BorderFactory.createCompoundBorder(
-                    new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
-                    BorderFactory.createEmptyBorder(8, 8, 8, 8)
-                ));
-            } else {
-                p.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            }
-        }
-        if (comp instanceof JSplitPane sp) {
-            sp.setBackground(fondoPanel);
-            sp.setDividerSize(6);
-            sp.setBorder(BorderFactory.createLineBorder(borde, 2, true));
-        }
+    // Barra de menú con estilo apropiado
+    JMenuBar barraMenu = getJMenuBar();
+    if (barraMenu != null) {
+      barraMenu.setBackground(fondoBarra);
+      barraMenu.setForeground(texto);
+      if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
+        barraMenu.setBorder(crearBordeNeumorphico(fondoBarra, true));
+      } else {
+        barraMenu.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, borde));
+      }
+      aplicarColoresMenu(barraMenu, fondoBarra, texto, acento);
     }
 
-    // Barra de estado
+    // Paneles principales con efectos neumórficos
+    aplicarEfectosEspeciales(getContentPane(), t, fondo, fondoPanel, borde, acento);
+
+    // Barra de estado especial
     Component barraEstadoComp = buscarComponentePorNombre(getContentPane(), "barraEstado");
     if (barraEstadoComp instanceof JPanel barraEstadoPanel) {
+      if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
+        barraEstadoPanel.setBackground(fondoPanel);
+        barraEstadoPanel.setBorder(crearBordeNeumorphico(fondoPanel, false));
+        etiquetaEstado.setForeground(acento);
+      } else {
         barraEstadoPanel.setBackground(acento);
-        barraEstadoPanel.setBorder(BorderFactory.createMatteBorder(0,0,0,0,acento));
+        barraEstadoPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, borde));
         etiquetaEstado.setForeground(Color.WHITE);
-        if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
-            barraEstadoPanel.setBorder(BorderFactory.createCompoundBorder(
-                new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
-                BorderFactory.createEmptyBorder(2, 12, 2, 12)
-            ));
-        }
+      }
     }
-
-    // Modales con tema
-    UIManager.put("OptionPane.background", fondoPanel);
-    UIManager.put("Panel.background", fondoPanel);
-    UIManager.put("OptionPane.messageForeground", texto);
 
     // Números de línea
     Component numerosLinea = obtenerVistaNumerosLinea();
     if (numerosLinea instanceof VistaNumerosLinea) {
-        ((VistaNumerosLinea) numerosLinea).setColores(fondoLinea, textoLinea);
+      ((VistaNumerosLinea) numerosLinea).setColores(fondoLinea, textoLinea);
     }
+
+    // Configurar UIManager para diálogos
+    configurarUIManagerParaTema(t, fondoPanel, texto, acento, fondo);
 
     SwingUtilities.updateComponentTreeUI(this);
     repaint();
   }
 
-  // Aplica colores recursivamente a todos los componentes
+  // Crea bordes neumórficos para temas MINNT
+  private javax.swing.border.Border crearBordeNeumorphico(Color fondo, boolean elevado) {
+    return new javax.swing.border.Border() {
+      @Override
+      public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        Color sombra = new Color(0, 0, 0, 30);
+        Color luz = new Color(255, 255, 255, 20);
+
+        if (elevado) {
+          // Sombra exterior (abajo-derecha)
+          g2.setColor(sombra);
+          g2.drawRoundRect(x+2, y+2, width-4, height-4, 12, 12);
+
+          // Luz interior (arriba-izquierda)
+          g2.setColor(luz);
+          g2.drawRoundRect(x, y, width-2, height-2, 12, 12);
+        } else {
+          // Sombra interior
+          g2.setColor(sombra);
+          g2.drawRoundRect(x+1, y+1, width-3, height-3, 8, 8);
+        }
+
+        g2.dispose();
+      }
+
+      @Override
+      public Insets getBorderInsets(Component c) {
+        return new Insets(4, 8, 4, 8);
+      }
+
+      @Override
+      public boolean isBorderOpaque() {
+        return false;
+      }
+    };
+  }
+
+  // Aplica efectos especiales según el tema
+  private void aplicarEfectosEspeciales(Container contenedor, Tema tema, Color fondo, Color fondoPanel, Color borde, Color acento) {
+    for (Component comp : contenedor.getComponents()) {
+      if (comp instanceof JPanel panel) {
+        if (tema == Tema.MINNT_OSCURO || tema == Tema.MINNT_CLARO) {
+          panel.setBorder(crearBordeNeumorphico(fondoPanel, true));
+          panel.setOpaque(true);
+        } else {
+          panel.setBorder(BorderFactory.createLineBorder(borde, 1));
+        }
+      } else if (comp instanceof JSplitPane splitPane) {
+        if (tema == Tema.MINNT_OSCURO || tema == Tema.MINNT_CLARO) {
+          splitPane.setDividerSize(8);
+          splitPane.setBorder(crearBordeNeumorphico(fondoPanel, false));
+        } else {
+          splitPane.setDividerSize(4);
+          splitPane.setBorder(BorderFactory.createLineBorder(borde, 1));
+        }
+        splitPane.setBackground(fondoPanel);
+      } else if (comp instanceof JScrollPane scrollPane) {
+        if (tema == Tema.MINNT_OSCURO || tema == Tema.MINNT_CLARO) {
+          scrollPane.setBorder(crearBordeNeumorphico(fondoPanel, false));
+        } else {
+          scrollPane.setBorder(BorderFactory.createLineBorder(borde, 1));
+        }
+        scrollPane.setBackground(fondoPanel);
+        scrollPane.getViewport().setBackground(fondoPanel);
+      }
+
+      if (comp instanceof Container) {
+        aplicarEfectosEspeciales((Container) comp, tema, fondo, fondoPanel, borde, acento);
+      }
+    }
+  }
+
+  // Aplica colores recursivamente con efectos neumórficos para botones
   private void aplicarColoresRecursivo(Container contenedor, Color fondo, Color fondoPanel,
-    Color fondoBarra, Color texto, Color acento, Color fondoLinea, Color textoLinea, Color borde,
-    Color fondoBoton, Color hoverBoton) {
+                                       Color fondoBarra, Color texto, Color acento, Color fondoLinea, Color textoLinea, Color borde,
+                                       Color fondoBoton, Color hoverBoton) {
     contenedor.setBackground(fondo);
     contenedor.setForeground(texto);
 
     for (Component comp : contenedor.getComponents()) {
-        if (comp instanceof JPanel p) {
-            p.setBackground(fondoPanel);
-            p.setForeground(texto);
-            if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
-                p.setBorder(BorderFactory.createCompoundBorder(
-                    new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
-                    BorderFactory.createEmptyBorder(8, 8, 8, 8)
-                ));
-            } else {
-                p.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            }
-        } else if (comp instanceof JButton btn) {
-            btn.setBackground(fondoBoton);
-            btn.setForeground(texto);
-            btn.setBorder(BorderFactory.createLineBorder(borde, temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO ? 2 : 1, true));
-            btn.setFocusPainted(false);
-            btn.setOpaque(true);
-            btn.setContentAreaFilled(true);
-            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            for (MouseListener ml : btn.getMouseListeners()) {
-                btn.removeMouseListener(ml);
-            }
-            btn.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(hoverBoton);
-                }
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(fondoBoton);
-                }
-            });
-            if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
-                btn.setBorder(BorderFactory.createCompoundBorder(
-                    new javax.swing.border.LineBorder(new Color(255,122,0,80), 2, true),
-                    BorderFactory.createEmptyBorder(2, 8, 2, 8)
-                ));
-                btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
-                    @Override
-                    public void paint(Graphics g, JComponent c) {
-                        Graphics2D g2 = (Graphics2D) g.create();
-                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        g2.setColor(btn.getBackground());
-                        g2.fillRoundRect(0, 0, btn.getWidth(), btn.getHeight(), 18, 18);
-                        g2.setColor(new Color(0,0,0,30));
-                        g2.fillRoundRect(3, 3, btn.getWidth()-6, btn.getHeight()-6, 14, 14);
-                        super.paint(g2, c);
-                        g2.dispose();
-                    }
-                });
-            } else {
-                btn.setUI(new javax.swing.plaf.basic.BasicButtonUI());
-            }
-        } else if (comp instanceof JLabel lbl) {
-            lbl.setForeground(texto);
-        } else if (comp instanceof JScrollPane sp) {
-            sp.setBackground(fondoPanel);
-            sp.getViewport().setBackground(fondoPanel);
-            sp.setBorder(BorderFactory.createLineBorder(borde, 1));
-        }
-        if (comp instanceof Container) {
-            aplicarColoresRecursivo((Container) comp, fondo, fondoPanel, fondoBarra, texto, acento,
+      if (comp instanceof JPanel p) {
+        p.setBackground(fondoPanel);
+        p.setForeground(texto);
+      } else if (comp instanceof JButton btn) {
+        configurarBotonConTema(btn, fondoBoton, hoverBoton, texto, borde);
+      } else if (comp instanceof JLabel lbl) {
+        lbl.setForeground(texto);
+      } else if (comp instanceof JTextArea area) {
+        area.setBackground(fondoPanel);
+        area.setForeground(texto);
+        area.setCaretColor(acento);
+        area.setSelectionColor(acento);
+        area.setSelectedTextColor(Color.WHITE);
+      }
+
+      if (comp instanceof Container) {
+        aplicarColoresRecursivo((Container) comp, fondo, fondoPanel, fondoBarra, texto, acento,
                 fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
+      }
+    }
+  }
+
+  // Configura botones con efectos neumórficos
+  private void configurarBotonConTema(JButton btn, Color fondoBoton, Color hoverBoton, Color texto, Color borde) {
+    btn.setBackground(fondoBoton);
+    btn.setForeground(texto);
+    btn.setFocusPainted(false);
+    btn.setOpaque(true);
+    btn.setContentAreaFilled(true);
+    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+    // Remover listeners existentes
+    for (MouseListener ml : btn.getMouseListeners()) {
+      btn.removeMouseListener(ml);
+    }
+
+    if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+      // Estilo neumórfico
+      btn.setBorder(crearBordeNeumorphico(fondoBoton, true));
+      btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
+        @Override
+        public void paint(Graphics g, JComponent c) {
+          Graphics2D g2 = (Graphics2D) g.create();
+          g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+          // Fondo con gradiente sutil
+          GradientPaint gradiente = new GradientPaint(
+                  0, 0, fondoBoton.brighter(),
+                  0, c.getHeight(), fondoBoton.darker()
+          );
+          g2.setPaint(gradiente);
+          g2.fillRoundRect(2, 2, c.getWidth()-4, c.getHeight()-4, 16, 16);
+
+          // Borde interior brillante
+          g2.setColor(new Color(255, 255, 255, 30));
+          g2.drawRoundRect(3, 3, c.getWidth()-6, c.getHeight()-6, 14, 14);
+
+          super.paint(g2, c);
+          g2.dispose();
         }
+      });
+
+      btn.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseEntered(MouseEvent e) {
+          btn.setBackground(hoverBoton);
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+          btn.setBackground(fondoBoton);
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+          // Efecto de presión
+          btn.setBorder(crearBordeNeumorphico(fondoBoton, false));
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+          btn.setBorder(crearBordeNeumorphico(fondoBoton, true));
+        }
+      });
+    } else {
+      // Estilo VS Code
+      btn.setBorder(BorderFactory.createCompoundBorder(
+              BorderFactory.createLineBorder(borde, 1),
+              BorderFactory.createEmptyBorder(4, 12, 4, 12)
+      ));
+      btn.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+
+      btn.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseEntered(MouseEvent e) {
+          btn.setBackground(hoverBoton);
+          btn.setBorder(BorderFactory.createCompoundBorder(
+                  BorderFactory.createLineBorder(hoverBoton, 1),
+                  BorderFactory.createEmptyBorder(4, 12, 4, 12)
+          ));
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+          btn.setBackground(fondoBoton);
+          btn.setBorder(BorderFactory.createCompoundBorder(
+                  BorderFactory.createLineBorder(borde, 1),
+                  BorderFactory.createEmptyBorder(4, 12, 4, 12)
+          ));
+        }
+      });
     }
   }
 
   private void aplicarColoresMenu(JMenuBar barraMenu, Color fondo, Color texto, Color acento) {
+    barraMenu.setBackground(fondo);
     for (int i = 0; i < barraMenu.getMenuCount(); i++) {
       JMenu menu = barraMenu.getMenu(i);
       menu.setBackground(fondo);
       menu.setForeground(texto);
+      menu.setOpaque(true);
       aplicarColoresItemsMenu(menu, fondo, texto, acento);
     }
   }
 
   private void aplicarColoresItemsMenu(JMenu menu, Color fondo, Color texto, Color acento) {
     for (Component comp : menu.getMenuComponents()) {
-      if (comp instanceof JMenuItem) {
-        comp.setBackground(fondo);
-        comp.setForeground(texto);
-        if (comp instanceof JMenu) {
-          aplicarColoresItemsMenu((JMenu) comp, fondo, texto, acento);
+      if (comp instanceof JMenuItem item) {
+        item.setBackground(fondo);
+        item.setForeground(texto);
+        item.setOpaque(true);
+        if (comp instanceof JMenu subMenu) {
+          aplicarColoresItemsMenu(subMenu, fondo, texto, acento);
         }
       }
     }
+  }
+
+  private void configurarUIManagerParaTema(Tema tema, Color fondoPanel, Color texto, Color acento, Color fondo) {
+    UIManager.put("OptionPane.background", fondoPanel);
+    UIManager.put("Panel.background", fondoPanel);
+    UIManager.put("OptionPane.messageForeground", texto);
+    UIManager.put("Button.background", acento);
+    UIManager.put("Button.foreground", Color.WHITE);
+    UIManager.put("ScrollPane.background", fondoPanel);
+    UIManager.put("Viewport.background", fondoPanel);
+    UIManager.put("TextArea.background", fondoPanel);
+    UIManager.put("TextArea.foreground", texto);
   }
 
   private Component buscarComponentePorNombre(Container contenedor, String nombre) {
@@ -653,85 +784,206 @@ public class MinntSATSolver extends JFrame {
     return null;
   }
 
-  // Diálogos
+  // Diálogos mejorados con tema aplicado
   private void mostrarAcercaDe() {
     String acerca = """
-        Minnt SAT Solver - Edición Java
-        Versión: 2.0
-
-        Características:
-        • Algoritmo DPLL con optimizaciones
-        • Propagación de unidades y eliminación de literales puros
+        🔥 Minnt SAT Solver - Edición Java
+        Versión: 2.0 - Interfaz Neumórfica
+        
+        ✨ Características principales:
+        • Algoritmo DPLL con optimizaciones avanzadas
+        • Propagación de unidades y eliminación de literales puros  
         • Heurística de ordenamiento por frecuencia de variables
-        • Múltiples temas (VS Oscuro/Claro, MINNT Oscuro/Claro)
-        • Exporta resultados a la carpeta Descargas
+        • Interfaz moderna con efectos neumórficos
+        • Múltiples temas (VS Code + MINNT Neumórfico)
+        • Exportación automática a carpeta Descargas
         • Soporte completo de atajos de teclado
-
-        Atajos:
-        • Ctrl+O: Abrir archivo
-        • F5: Ejecutar solver
+        • Editor con números de línea integrado
+        
+        ⌨️ Atajos principales:
+        • Ctrl+O: Abrir archivo CNF/TXT
+        • F5: Ejecutar solver SAT
         • Ctrl+Shift+C: Copiar resultado
+        • Escape: Cancelar ejecución
+        
+        🎨 Temas disponibles:
+        • Oscuro/Claro: Réplica fiel de Visual Studio Code
+        • MINNT Oscuro/Claro: Diseño neumórfico naranja
+        
+        🚀 Optimizado para problemas SAT de alta complejidad
         """;
 
-    JTextArea areaTexto = new JTextArea(acerca);
-    areaTexto.setEditable(false);
-    areaTexto.setFont(new Font(FUENTE_UI, Font.PLAIN, 12));
-    areaTexto.setOpaque(true);
-    areaTexto.setBackground(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? VS_OSCURO_PANEL : VS_CLARO_PANEL);
-    areaTexto.setForeground(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? VS_OSCURO_TEXTO : VS_CLARO_TEXTO);
-
-    JOptionPane.showMessageDialog(this, areaTexto, "Acerca de Minnt SAT Solver",
-            JOptionPane.INFORMATION_MESSAGE);
+    mostrarDialogoTematizado("Acerca de Minnt SAT Solver", acerca, 700, 600);
   }
 
   private void mostrarManual() {
     String manual = """
-        Minnt SAT Solver - Manual de usuario
-
-        FORMATOS SOPORTADOS:
-        • Formato DIMACS CNF
-        • Comentarios: líneas que empiezan con 'c' o '//'
-        • Cabecera: 'p cnf <variables> <cláusulas>'
-        • Cláusulas: literales separados por espacios terminando en '0'
-
-        USO:
-        1. Abre un archivo CNF (Archivo → Abrir o Ctrl+O)
-        2. Edita el problema en el panel izquierdo
-        3. Ejecuta el solver (Ejecutar → Resolver SAT o F5)
-        4. Visualiza resultados en el panel derecho
-        5. Copia resultados (Ctrl+Shift+C) o guarda en archivo
-
-        EXPORTAR:
-        Los resultados se guardan en tu carpeta Descargas con marca de tiempo:
-        'minnt_result_<timestamp>.txt'
-
-        TEMAS:
-        • Oscuro/Claro: Temas Visual Studio Code
-        • MINNT Oscuro/Claro: Temas personalizados naranja neumorfismo
-
-        ATAJOS DE TECLADO:
+        📖 Manual completo - Minnt SAT Solver
+        
+        🎯 INTRODUCCIÓN
+        Minnt SAT Solver es una herramienta avanzada para resolver problemas de satisfacibilidad 
+        booleana (SAT) utilizando el algoritmo DPLL optimizado con interfaz neumórfica moderna.
+        
+        📋 FORMATOS SOPORTADOS
+        ▶ Formato DIMACS CNF estándar
+        ▶ Comentarios: líneas que empiezan con 'c' o '//'  
+        ▶ Cabecera obligatoria: 'p cnf <num_variables> <num_clausulas>'
+        ▶ Cláusulas: literales separados por espacios, terminando en '0'
+        ▶ Variables: números enteros (positivos=verdadero, negativos=falso)
+        
+        🔧 GUÍA DE USO PASO A PASO
+        
+        1️⃣ CARGAR PROBLEMA:
+           • Archivo → Abrir CNF/TXT... (Ctrl+O)
+           • O editar directamente en el panel izquierdo
+           • El editor incluye números de línea y coloreado de sintaxis
+        
+        2️⃣ CONFIGURAR ENTORNO:  
+           • Seleccionar tema en Vista → Tema
+           • Ajustar tamaño de ventana según preferencia
+           • Verificar formato en barra de estado
+        
+        3️⃣ EJECUTAR SOLVER:
+           • Ejecutar → Resolver SAT (F5)
+           • Monitorear progreso en barra de estado
+           • Cancelar con botón "Cancelar" si es necesario
+        
+        4️⃣ ANALIZAR RESULTADOS:
+           • SAT: Problema satisfacible + asignación de variables
+           • UNSAT: Problema insatisfacible
+           • Tiempo de ejecución y estadísticas incluidas
+        
+        5️⃣ EXPORTAR RESULTADOS:
+           • Copiar al portapapeles: Ctrl+Shift+C
+           • Guardar archivo: Botón 💾 (auto-guardado en Descargas)
+           • Formato: minnt_result_<timestamp>.txt
+        
+        🎨 PERSONALIZACIÓN DE INTERFAZ
+        
+        📱 Temas disponibles:
+        • Oscuro: Replica Visual Studio Code modo oscuro
+        • Claro: Replica Visual Studio Code modo claro  
+        • MINNT Oscuro: Neumorfismo naranja sobre fondo oscuro
+        • MINNT Claro: Neumorfismo naranja sobre fondo claro
+        
+        🎯 Características neumórficas (temas MINNT):
+        • Bordes redondeados con sombras suaves
+        • Efectos de elevación en botones y paneles
+        • Gradientes sutiles y transiciones suaves
+        • Paleta de colores naranja cohesiva
+        
+        ⌨️ ATAJOS DE TECLADO COMPLETOS
         • Ctrl+O: Abrir archivo
-        • F5: Ejecutar solver
-        • Ctrl+Shift+C: Copiar resultado al portapapeles
-        • Atajos estándar de edición de texto en el editor
+        • Ctrl+S: Guardar (si implementado)
+        • F5: Ejecutar solver  
+        • Ctrl+Shift+C: Copiar resultado
+        • Ctrl+Z: Deshacer en editor
+        • Ctrl+Y: Rehacer en editor
+        • Ctrl+A: Seleccionar todo
+        • Ctrl+F: Buscar (estándar del sistema)
+        
+        🔍 RESOLUCIÓN DE PROBLEMAS
+        
+        ❌ Errores comunes:
+        • "Falta cabecera p cnf": Agregar línea p cnf <vars> <clauses>
+        • "Formato inválido": Verificar que cláusulas terminen en 0
+        • "Sin cláusulas": Revisar que existan cláusulas válidas
+        • "Memoria insuficiente": Reducir tamaño del problema
+        
+        ✅ Consejos de optimización:
+        • Usar variables consecutivas (1,2,3...) para mejor rendimiento
+        • Evitar cláusulas redundantes
+        • Probar con diferentes ordenamientos de variables
+        • Para problemas grandes, considerar timeouts
+        
+        🚀 ALGORITMO DPLL IMPLEMENTADO
+        • Propagación de unidades (unit propagation)
+        • Eliminación de literales puros (pure literal elimination)  
+        • Heurística de frecuencia para selección de variables
+        • Backtracking inteligente con poda
+        • Detección temprana de conflictos
+        
+        📊 El solver maneja eficientemente:
+        • Problemas pequeños: < 1 segundo
+        • Problemas medianos: segundos a minutos  
+        • Problemas grandes: puede requerir varios minutos
+        
+        Para soporte adicional o reportar bugs, contactar al desarrollador.
         """;
 
-    JTextArea areaTexto = new JTextArea(manual);
+    mostrarDialogoTematizado("Manual de usuario completo", manual, 700, 600);
+  }
+
+  // Método unificado para mostrar diálogos tematizados
+  private void mostrarDialogoTematizado(String titulo, String contenido, int ancho, int alto) {
+    Color fondo, texto, acento;
+
+    if (temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO) {
+      fondo = temaActual == Tema.OSCURO ? VS_OSCURO_PANEL : MINNT_OSCURO_PANEL;
+      texto = temaActual == Tema.OSCURO ? VS_OSCURO_TEXTO : MINNT_OSCURO_TEXTO;
+      acento = temaActual == Tema.OSCURO ? VS_OSCURO_ACENTO : MINNT_OSCURO_ACENTO;
+    } else {
+      fondo = temaActual == Tema.CLARO ? VS_CLARO_PANEL : MINNT_CLARO_PANEL;
+      texto = temaActual == Tema.CLARO ? VS_CLARO_TEXTO : MINNT_CLARO_TEXTO;
+      acento = temaActual == Tema.CLARO ? VS_CLARO_ACENTO : MINNT_CLARO_ACENTO;
+    }
+
+    // Crear diálogo personalizado
+    JDialog dialogo = new JDialog(this, titulo, true);
+    dialogo.setSize(ancho, alto);
+    dialogo.setLocationRelativeTo(this);
+    dialogo.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+    // Panel principal con tema
+    JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
+    panelPrincipal.setBackground(fondo);
+    if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+      panelPrincipal.setBorder(crearBordeNeumorphico(fondo, true));
+    } else {
+      panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    }
+
+    // Área de texto con scroll
+    JTextArea areaTexto = new JTextArea(contenido);
     areaTexto.setEditable(false);
-    areaTexto.setFont(new Font(FUENTE_CODIGO, Font.PLAIN, 12));
+    areaTexto.setFont(new Font(FUENTE_UI, Font.PLAIN, 12));
     areaTexto.setLineWrap(true);
     areaTexto.setWrapStyleWord(true);
-    areaTexto.setOpaque(true);
-    areaTexto.setBackground(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? VS_OSCURO_PANEL : VS_CLARO_PANEL);
-    areaTexto.setForeground(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? VS_OSCURO_TEXTO : VS_CLARO_TEXTO);
+    areaTexto.setBackground(fondo);
+    areaTexto.setForeground(texto);
+    areaTexto.setCaretColor(acento);
+    areaTexto.setSelectionColor(acento);
+    areaTexto.setSelectedTextColor(Color.WHITE);
+    areaTexto.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
     JScrollPane scroll = new JScrollPane(areaTexto);
-    scroll.setPreferredSize(new Dimension(600, 400));
-    scroll.setBackground(areaTexto.getBackground());
-    scroll.getViewport().setBackground(areaTexto.getBackground());
+    scroll.setBackground(fondo);
+    scroll.getViewport().setBackground(fondo);
+    scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-    JOptionPane.showMessageDialog(this, scroll, "Manual de usuario",
-            JOptionPane.INFORMATION_MESSAGE);
+    if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+      scroll.setBorder(crearBordeNeumorphico(fondo, false));
+    } else {
+      scroll.setBorder(BorderFactory.createLineBorder(acento, 1));
+    }
+
+    // Panel de botones
+    JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+    panelBotones.setBackground(fondo);
+
+    JButton botonCerrar = new JButton("Cerrar");
+    configurarBotonConTema(botonCerrar, acento, acento.brighter(), Color.WHITE, acento);
+    botonCerrar.addActionListener(e -> dialogo.dispose());
+
+    panelBotones.add(botonCerrar);
+
+    // Ensamblar diálogo
+    panelPrincipal.add(scroll, BorderLayout.CENTER);
+    panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
+
+    dialogo.add(panelPrincipal);
+    dialogo.setVisible(true);
   }
 
   private void alCerrar() {
@@ -1169,7 +1421,7 @@ public class MinntSATSolver extends JFrame {
     return false;
   }
 
-  // Componente de números de línea para el editor
+  // Componente de números de línea para el editor con efectos neumórficos
   static class VistaNumerosLinea extends JComponent implements DocumentListener {
     private final JTextArea areaTexto;
     private FontMetrics metricaFuente;
@@ -1199,10 +1451,23 @@ public class MinntSATSolver extends JFrame {
       super.paintComponent(g);
 
       Rectangle clip = g.getClipBounds();
-      g.setColor(colorFondo);
-      g.fillRect(clip.x, clip.y, clip.width, clip.height);
+      Graphics2D g2 = (Graphics2D) g.create();
+      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-      g.setColor(colorTexto);
+      // Fondo con gradiente sutil
+      GradientPaint gradiente = new GradientPaint(
+              0, 0, colorFondo.brighter(),
+              getWidth(), 0, colorFondo
+      );
+      g2.setPaint(gradiente);
+      g2.fillRect(clip.x, clip.y, clip.width, clip.height);
+
+      // Línea separadora con efecto
+      g2.setColor(new Color(255, 122, 0, 40));
+      g2.setStroke(new BasicStroke(2));
+      g2.drawLine(getWidth()-2, clip.y, getWidth()-2, clip.y + clip.height);
+
+      g2.setColor(colorTexto);
       this.metricaFuente = getFontMetrics(getFont());
 
       try {
@@ -1220,10 +1485,17 @@ public class MinntSATSolver extends JFrame {
           int x = getWidth() - MARGEN - metricaFuente.stringWidth(numLinea);
           int y = rectLinea.y + metricaFuente.getAscent();
 
-          g.drawString(numLinea, x, y);
+          // Sombra de texto para efecto 3D
+          g2.setColor(new Color(0, 0, 0, 30));
+          g2.drawString(numLinea, x+1, y+1);
+
+          g2.setColor(colorTexto);
+          g2.drawString(numLinea, x, y);
         }
 
       } catch (Exception ignored) {}
+
+      g2.dispose();
     }
 
     @Override
