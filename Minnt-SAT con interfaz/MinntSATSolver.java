@@ -1,5 +1,5 @@
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
@@ -15,484 +15,633 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MinntSATSolver extends JFrame {
+
+  // Componentes de la interfaz
   private JTextArea editor;
-  private JTextArea resultArea;
-  private JProgressBar progressBar;
-  private JLabel statusLabel;
-  private JButton solveButton;
-  private JButton openBtn;
-  private JButton clearBtn;
-  private AtomicBoolean cancelRequested = new AtomicBoolean(false);
+  private JTextArea areaResultado;
+  private JProgressBar barraProgreso;
+  private JLabel etiquetaEstado;
+  private JButton botonResolver;
+  private AtomicBoolean cancelarSolicitado = new AtomicBoolean(false);
 
-  private enum Theme { DARK, LIGHT, MINNT_DARK, MINNT_LIGHT }
-  private Theme currentTheme = Theme.DARK;
+  // Tema y paletas
+  private enum Tema { OSCURO, CLARO, MINNT_OSCURO, MINNT_CLARO }
+  private Tema temaActual = Tema.MINNT_OSCURO;
 
-  private static final Color VS_DARK_BG = Color.decode("#1e1e1e");
-  private static final Color VS_DARK_PANEL = Color.decode("#252526");
-  private static final Color VS_DARK_SIDEBAR = Color.decode("#333333");
-  private static final Color VS_DARK_FG = Color.decode("#d4d4d4");
-  private static final Color VS_DARK_ACCENT = Color.decode("#007acc");
-  private static final Color VS_DARK_LINE_BG = Color.decode("#2b2b2b");
-  private static final Color VS_DARK_LINE_FG = Color.decode("#858585");
-  private static final Color VS_DARK_BORDER = Color.decode("#464647");
-  private static final Color VS_DARK_BUTTON = Color.decode("#0e639c");
-  private static final Color VS_DARK_BUTTON_HOVER = Color.decode("#1177bb");
+  // Colores tema VS Code Oscuro
+  private static final Color VS_OSCURO_FONDO = Color.decode("#1e1e1e");
+  private static final Color VS_OSCURO_PANEL = Color.decode("#252526");
+  private static final Color VS_OSCURO_BARRA = Color.decode("#333333");
+  private static final Color VS_OSCURO_TEXTO = Color.decode("#d4d4d4");
+  private static final Color VS_OSCURO_ACENTO = Color.decode("#007acc");
+  private static final Color VS_OSCURO_LINEA_FONDO = Color.decode("#2b2b2b");
+  private static final Color VS_OSCURO_LINEA_TEXTO = Color.decode("#858585");
+  private static final Color VS_OSCURO_BORDE = Color.decode("#464647");
+  private static final Color VS_OSCURO_BOTON = Color.decode("#0e639c");
+  private static final Color VS_OSCURO_BOTON_HOVER = Color.decode("#1177bb");
 
-  // VS Code Light Theme Colors
-  private static final Color VS_LIGHT_BG = Color.decode("#ffffff");
-  private static final Color VS_LIGHT_PANEL = Color.decode("#f3f3f3");
-  private static final Color VS_LIGHT_SIDEBAR = Color.decode("#f8f8f8");
-  private static final Color VS_LIGHT_FG = Color.decode("#333333");
-  private static final Color VS_LIGHT_ACCENT = Color.decode("#0078d4");
-  private static final Color VS_LIGHT_LINE_BG = Color.decode("#eaeaea");
-  private static final Color VS_LIGHT_LINE_FG = Color.decode("#606060");
-  private static final Color VS_LIGHT_BORDER = Color.decode("#e5e5e5");
-  private static final Color VS_LIGHT_BUTTON = Color.decode("#0078d4");
-  private static final Color VS_LIGHT_BUTTON_HOVER = Color.decode("#106ebe");
+  // Colores tema VS Code Claro
+  private static final Color VS_CLARO_FONDO = Color.decode("#ffffff");
+  private static final Color VS_CLARO_PANEL = Color.decode("#f3f3f3");
+  private static final Color VS_CLARO_BARRA = Color.decode("#f8f8f8");
+  private static final Color VS_CLARO_TEXTO = Color.decode("#333333");
+  private static final Color VS_CLARO_ACENTO = Color.decode("#0078d4");
+  private static final Color VS_CLARO_LINEA_FONDO = Color.decode("#eaeaea");
+  private static final Color VS_CLARO_LINEA_TEXTO = Color.decode("#606060");
+  private static final Color VS_CLARO_BORDE = Color.decode("#e5e5e5");
+  private static final Color VS_CLARO_BOTON = Color.decode("#0078d4");
+  private static final Color VS_CLARO_BOTON_HOVER = Color.decode("#106ebe");
 
-  private static final Color MINNT_DARK_BG = Color.decode("#111217");
-  private static final Color MINNT_DARK_PANEL = Color.decode("#13161a");
-  private static final Color MINNT_DARK_FG = Color.decode("#e6e6e6");
-  private static final Color MINNT_DARK_ACCENT = Color.decode("#ff7a00");
-  private static final Color MINNT_DARK_LINE_BG = Color.decode("#0f1113");
-  private static final Color MINNT_DARK_LINE_FG = Color.decode("#8a8a8a");
+  // Tema MINNT (neumorfismo naranja)
+  private static final Color MINNT_OSCURO_FONDO = Color.decode("#111217");
+  private static final Color MINNT_OSCURO_PANEL = Color.decode("#13161a");
+  private static final Color MINNT_OSCURO_TEXTO = Color.decode("#e6e6e6");
+  private static final Color MINNT_OSCURO_ACENTO = Color.decode("#ff7a00");
+  private static final Color MINNT_OSCURO_LINEA_FONDO = Color.decode("#0f1113");
+  private static final Color MINNT_OSCURO_LINEA_TEXTO = Color.decode("#8a8a8a");
 
-  private static final Color MINNT_LIGHT_BG = Color.decode("#f8f7f5");
-  private static final Color MINNT_LIGHT_PANEL = Color.decode("#fbf8f5");
-  private static final Color MINNT_LIGHT_FG = Color.decode("#222222");
-  private static final Color MINNT_LIGHT_ACCENT = Color.decode("#ff7a00");
-  private static final Color MINNT_LIGHT_LINE_BG = Color.decode("#f0ede9");
-  private static final Color MINNT_LIGHT_LINE_FG = Color.decode("#6b6b6b");
+  private static final Color MINNT_CLARO_FONDO = Color.decode("#f8f7f5");
+  private static final Color MINNT_CLARO_PANEL = Color.decode("#fbf8f5");
+  private static final Color MINNT_CLARO_TEXTO = Color.decode("#222222");
+  private static final Color MINNT_CLARO_ACENTO = Color.decode("#ff7a00");
+  private static final Color MINNT_CLARO_LINEA_FONDO = Color.decode("#f0ede9");
+  private static final Color MINNT_CLARO_LINEA_TEXTO = Color.decode("#6b6b6b");
 
-  private static final String CODE_FONT_NAME = "Consolas";
-  private static final String UI_FONT_NAME = "Segoe UI";
-  private static final int CODE_FONT_SIZE = 14;
-  private static final int UI_FONT_SIZE = 13;
+  // Fuentes (estilo VS Code)
+  private static final String FUENTE_CODIGO = "Consolas";
+  private static final String FUENTE_UI = "Segoe UI";
+  private static final int TAM_CODIGO = 14;
+  private static final int TAM_UI = 13;
 
-  private JMenu themeMenu;
+  // Referencia al menú de tema
+  private JMenu menuTema;
 
   public MinntSATSolver() {
     setTitle("Minnt SAT Solver");
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     setExtendedState(JFrame.MAXIMIZED_BOTH);
-    buildUI();
-    applyTheme(currentTheme);
+    construirInterfaz();
+    aplicarTema(temaActual);
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        onClose();
+        alCerrar();
       }
     });
   }
 
-  private void buildUI() {
-    Font uiFont = new Font(UI_FONT_NAME, Font.PLAIN, UI_FONT_SIZE);
-    Font codeFont = new Font(CODE_FONT_NAME, Font.PLAIN, CODE_FONT_SIZE);
+  private void construirInterfaz() {
+    Font fuenteUI = new Font(FUENTE_UI, Font.PLAIN, TAM_UI);
+    Font fuenteCodigo = new Font(FUENTE_CODIGO, Font.PLAIN, TAM_CODIGO);
 
-    JMenuBar menuBar = new JMenuBar();
-    menuBar.setFont(uiFont);
-    menuBar.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+    // BARRA DE MENÚ (estilo VS Code)
+    JMenuBar barraMenu = new JMenuBar();
+    barraMenu.setFont(fuenteUI);
+    barraMenu.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
 
-    JMenu fileMenu = new JMenu("File");
-    fileMenu.setFont(uiFont);
-    JMenuItem openItem = new JMenuItem("Open CNF/TXT...");
-    openItem.setFont(uiFont);
-    openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
-    openItem.addActionListener(e -> loadCNFFromFile());
-    fileMenu.add(openItem);
-    fileMenu.addSeparator();
-    JMenuItem exitItem = new JMenuItem("Exit");
-    exitItem.setFont(uiFont);
-    exitItem.addActionListener(e -> onClose());
-    fileMenu.add(exitItem);
+    // Menú Archivo
+    JMenu menuArchivo = new JMenu("Archivo");
+    menuArchivo.setFont(fuenteUI);
+    JMenuItem abrirItem = new JMenuItem("Abrir CNF/TXT...");
+    abrirItem.setFont(fuenteUI);
+    abrirItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
+    abrirItem.addActionListener(e -> cargarCNFDesdeArchivo());
+    menuArchivo.add(abrirItem);
+    menuArchivo.addSeparator();
+    JMenuItem salirItem = new JMenuItem("Salir");
+    salirItem.setFont(fuenteUI);
+    salirItem.addActionListener(e -> alCerrar());
+    menuArchivo.add(salirItem);
 
-    JMenu editMenu = new JMenu("Edit");
-    editMenu.setFont(uiFont);
-    JMenuItem copyItem = new JMenuItem("Copy Result");
-    copyItem.setFont(uiFont);
-    copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-    copyItem.addActionListener(e -> copyResultToClipboard());
-    editMenu.add(copyItem);
+    // Menú Edición
+    JMenu menuEdicion = new JMenu("Edición");
+    menuEdicion.setFont(fuenteUI);
+    JMenuItem copiarItem = new JMenuItem("Copiar resultado");
+    copiarItem.setFont(fuenteUI);
+    copiarItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+    copiarItem.addActionListener(e -> copiarResultadoAlPortapapeles());
+    menuEdicion.add(copiarItem);
 
-    JMenu viewMenu = new JMenu("View");
-    viewMenu.setFont(uiFont);
-    themeMenu = new JMenu("Theme");
-    themeMenu.setFont(uiFont);
-    JMenuItem tDark = new JMenuItem("Dark");
-    tDark.setFont(uiFont);
-    tDark.addActionListener(e -> { currentTheme = Theme.DARK; applyTheme(currentTheme); });
-    JMenuItem tLight = new JMenuItem("Light");
-    tLight.setFont(uiFont);
-    tLight.addActionListener(e -> { currentTheme = Theme.LIGHT; applyTheme(currentTheme); });
-    JMenuItem tMinntDark = new JMenuItem("MINNT Dark");
-    tMinntDark.setFont(uiFont);
-    tMinntDark.addActionListener(e -> { currentTheme = Theme.MINNT_DARK; applyTheme(currentTheme); });
-    JMenuItem tMinntLight = new JMenuItem("MINNT Light");
-    tMinntLight.setFont(uiFont);
-    tMinntLight.addActionListener(e -> { currentTheme = Theme.MINNT_LIGHT; applyTheme(currentTheme); });
-    themeMenu.add(tDark);
-    themeMenu.add(tLight);
-    themeMenu.addSeparator();
-    themeMenu.add(tMinntDark);
-    themeMenu.add(tMinntLight);
-    viewMenu.add(themeMenu);
+    // Menú Vista
+    JMenu menuVista = new JMenu("Vista");
+    menuVista.setFont(fuenteUI);
 
-    JMenu runMenu = new JMenu("Run");
-    runMenu.setFont(uiFont);
-    JMenuItem solveItem = new JMenuItem("Solve SAT");
-    solveItem.setFont(uiFont);
-    solveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
-    solveItem.addActionListener(e -> startSolve());
-    runMenu.add(solveItem);
+    menuTema = new JMenu("Tema");
+    menuTema.setFont(fuenteUI);
 
-    JMenu helpMenu = new JMenu("Help");
-    helpMenu.setFont(uiFont);
-    JMenuItem about = new JMenuItem("About");
-    about.setFont(uiFont);
-    about.addActionListener(e -> showAbout());
-    JMenuItem manual = new JMenuItem("User Manual");
-    manual.setFont(uiFont);
-    manual.addActionListener(e -> showManual());
-    helpMenu.add(about);
-    helpMenu.add(manual);
+    JMenuItem tOscuro = new JMenuItem("Oscuro");
+    tOscuro.setFont(fuenteUI);
+    tOscuro.addActionListener(e -> { temaActual = Tema.OSCURO; aplicarTema(temaActual); });
 
-    menuBar.add(fileMenu);
-    menuBar.add(editMenu);
-    menuBar.add(viewMenu);
-    menuBar.add(runMenu);
-    menuBar.add(helpMenu);
-    setJMenuBar(menuBar);
+    JMenuItem tClaro = new JMenuItem("Claro");
+    tClaro.setFont(fuenteUI);
+    tClaro.addActionListener(e -> { temaActual = Tema.CLARO; aplicarTema(temaActual); });
 
-    JPanel mainPanel = new JPanel(new BorderLayout());
-    mainPanel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+    JMenuItem tMinntOscuro = new JMenuItem("MINNT Oscuro");
+    tMinntOscuro.setFont(fuenteUI);
+    tMinntOscuro.addActionListener(e -> { temaActual = Tema.MINNT_OSCURO; aplicarTema(temaActual); });
 
-    JPanel activityBar = new JPanel();
-    activityBar.setLayout(new BoxLayout(activityBar, BoxLayout.Y_AXIS));
-    activityBar.setPreferredSize(new Dimension(48, 0));
-    activityBar.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
+    JMenuItem tMinntClaro = new JMenuItem("MINNT Claro");
+    tMinntClaro.setFont(fuenteUI);
+    tMinntClaro.addActionListener(e -> { temaActual = Tema.MINNT_CLARO; aplicarTema(temaActual); });
 
-    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    splitPane.setResizeWeight(0.6);
-    splitPane.setBorder(null);
-    splitPane.setDividerSize(4);
+    menuTema.add(tOscuro);
+    menuTema.add(tClaro);
+    menuTema.addSeparator();
+    menuTema.add(tMinntOscuro);
+    menuTema.add(tMinntClaro);
 
-    JPanel leftPanel = new JPanel(new BorderLayout());
-    leftPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 2));
+    menuVista.add(menuTema);
 
-    JPanel editorTabBar = new JPanel(new BorderLayout());
-    editorTabBar.setPreferredSize(new Dimension(0, 35));
-    editorTabBar.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
-    JLabel editorTab = new JLabel("problem.cnf");
-    editorTab.setFont(uiFont);
-    editorTab.setIcon(createColoredIcon(12, 12, new Color(0, 122, 204)));
-    editorTab.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-    editorTabBar.add(editorTab, BorderLayout.WEST);
+    // Menú Ejecutar
+    JMenu menuEjecutar = new JMenu("Ejecutar");
+    menuEjecutar.setFont(fuenteUI);
+    JMenuItem resolverItem = new JMenuItem("Resolver SAT");
+    resolverItem.setFont(fuenteUI);
+    resolverItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+    resolverItem.addActionListener(e -> iniciarResolucion());
+    menuEjecutar.add(resolverItem);
 
+    // Menú Ayuda
+    JMenu menuAyuda = new JMenu("Ayuda");
+    menuAyuda.setFont(fuenteUI);
+    JMenuItem acercaDe = new JMenuItem("Acerca de");
+    acercaDe.setFont(fuenteUI);
+    acercaDe.addActionListener(e -> mostrarAcercaDe());
+    JMenuItem manual = new JMenuItem("Manual de usuario");
+    manual.setFont(fuenteUI);
+    manual.addActionListener(e -> mostrarManual());
+    menuAyuda.add(acercaDe);
+    menuAyuda.add(manual);
+
+    barraMenu.add(menuArchivo);
+    barraMenu.add(menuEdicion);
+    barraMenu.add(menuVista);
+    barraMenu.add(menuEjecutar);
+    barraMenu.add(menuAyuda);
+
+    setJMenuBar(barraMenu);
+
+    // Panel principal con diseño VS Code
+    JPanel panelPrincipal = new JPanel(new BorderLayout());
+    panelPrincipal.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+    // Barra de actividad (lateral izquierdo - simplificado)
+    JPanel barraActividad = new JPanel();
+    barraActividad.setLayout(new BoxLayout(barraActividad, BoxLayout.Y_AXIS));
+    barraActividad.setPreferredSize(new Dimension(48, 0));
+    barraActividad.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
+
+    // Panel dividido para editor y resultado
+    JSplitPane panelDividido = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    panelDividido.setResizeWeight(0.6);
+    panelDividido.setBorder(null);
+    panelDividido.setDividerSize(4);
+
+    // Panel izquierdo - Editor
+    JPanel panelIzquierdo = new JPanel(new BorderLayout());
+    panelIzquierdo.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 2));
+
+    // Barra de pestañas del editor
+    JPanel barraPestañasEditor = new JPanel(new BorderLayout());
+    barraPestañasEditor.setPreferredSize(new Dimension(0, 35));
+    barraPestañasEditor.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
+
+    JLabel pestañaEditor = new JLabel("problema.cnf");
+    pestañaEditor.setFont(fuenteUI);
+    pestañaEditor.setIcon(crearIconoColoreado(12, 12, new Color(0, 122, 204)));
+    pestañaEditor.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    barraPestañasEditor.add(pestañaEditor, BorderLayout.WEST);
+
+    // Área de editor
     editor = new JTextArea();
-    editor.setFont(codeFont);
+    editor.setFont(fuenteCodigo);
     editor.setTabSize(2);
     editor.setLineWrap(false);
     editor.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 8));
 
-    JScrollPane editorScroll = new JScrollPane(editor);
-    editorScroll.setBorder(null);
-    LineNumberView lineNumbers = new LineNumberView(editor);
-    editorScroll.setRowHeaderView(lineNumbers);
+    JScrollPane scrollEditor = new JScrollPane(editor);
+    scrollEditor.setBorder(null);
+    VistaNumerosLinea numerosLinea = new VistaNumerosLinea(editor);
+    scrollEditor.setRowHeaderView(numerosLinea);
 
-    leftPanel.add(editorTabBar, BorderLayout.NORTH);
-    leftPanel.add(editorScroll, BorderLayout.CENTER);
+    panelIzquierdo.add(barraPestañasEditor, BorderLayout.NORTH);
+    panelIzquierdo.add(scrollEditor, BorderLayout.CENTER);
 
-    JPanel editorToolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-    editorToolbar.setBorder(BorderFactory.createEmptyBorder(0, 8, 4, 8));
-    openBtn = createVSCodeButton("Open", KeyEvent.VK_O);
-    openBtn.addActionListener(e -> loadCNFFromFile());
-    solveButton = createVSCodeButton("Run", KeyEvent.VK_F5);
-    solveButton.addActionListener(e -> startSolve());
-    clearBtn = createVSCodeButton("Clear", 0);
-    clearBtn.addActionListener(e -> {
+    // Barra de herramientas del editor
+    JPanel barraHerramientasEditor = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+    barraHerramientasEditor.setBorder(BorderFactory.createEmptyBorder(0, 8, 4, 8));
+
+    JButton abrirBtn = crearBotonVSCode("Abrir", KeyEvent.VK_O);
+    abrirBtn.addActionListener(e -> cargarCNFDesdeArchivo());
+
+    botonResolver = crearBotonVSCode("Ejecutar", KeyEvent.VK_F5);
+    botonResolver.addActionListener(e -> iniciarResolucion());
+
+    JButton limpiarBtn = crearBotonVSCode("Limpiar", 0);
+    limpiarBtn.addActionListener(e -> {
       editor.setText("");
-      resultArea.setText("");
-      statusLabel.setText("Ready");
+      areaResultado.setText("");
+      etiquetaEstado.setText("Listo");
     });
-    editorToolbar.add(openBtn);
-    editorToolbar.add(solveButton);
-    editorToolbar.add(clearBtn);
-    leftPanel.add(editorToolbar, BorderLayout.SOUTH);
 
-    JPanel rightPanel = new JPanel(new BorderLayout());
-    rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
+    barraHerramientasEditor.add(abrirBtn);
+    barraHerramientasEditor.add(botonResolver);
+    barraHerramientasEditor.add(limpiarBtn);
+    panelIzquierdo.add(barraHerramientasEditor, BorderLayout.SOUTH);
 
-    JPanel outputTabBar = new JPanel(new BorderLayout());
-    outputTabBar.setPreferredSize(new Dimension(0, 35));
-    outputTabBar.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
-    JLabel outputTab = new JLabel("OUTPUT");
-    outputTab.setFont(new Font(UI_FONT_NAME, Font.PLAIN, 11));
-    outputTab.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    // Panel derecho - Salida/Resultados
+    JPanel panelDerecho = new JPanel(new BorderLayout());
+    panelDerecho.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 
-    JPanel outputToolbar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
-    JButton copyBtn = createIconButton("Copy", "📋");
-    copyBtn.addActionListener(e -> copyResultToClipboard());
-    JButton saveBtn = createIconButton("Save", "💾");
-    saveBtn.addActionListener(e -> exportResultToDownloads());
-    outputToolbar.add(copyBtn);
-    outputToolbar.add(saveBtn);
+    // Barra de pestañas de salida
+    JPanel barraPestañasSalida = new JPanel(new BorderLayout());
+    barraPestañasSalida.setPreferredSize(new Dimension(0, 35));
+    barraPestañasSalida.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
 
-    outputTabBar.add(outputTab, BorderLayout.WEST);
-    outputTabBar.add(outputToolbar, BorderLayout.EAST);
+    JLabel pestañaSalida = new JLabel("SALIDA");
+    pestañaSalida.setFont(new Font(FUENTE_UI, Font.PLAIN, 11));
+    pestañaSalida.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-    resultArea = new JTextArea();
-    resultArea.setFont(codeFont);
-    resultArea.setEditable(false);
-    resultArea.setLineWrap(true);
-    resultArea.setWrapStyleWord(true);
-    resultArea.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 8));
+    // Barra de herramientas de salida
+    JPanel barraHerramientasSalida = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
+    JButton copiarBtn = crearBotonIcono("Copiar", "📋");
+    copiarBtn.addActionListener(e -> copiarResultadoAlPortapapeles());
+    JButton guardarBtn = crearBotonIcono("Guardar", "💾");
+    guardarBtn.addActionListener(e -> exportarResultadoADescargas());
 
-    JScrollPane resultScroll = new JScrollPane(resultArea);
-    resultScroll.setBorder(null);
-    rightPanel.add(outputTabBar, BorderLayout.NORTH);
-    rightPanel.add(resultScroll, BorderLayout.CENTER);
+    barraHerramientasSalida.add(copiarBtn);
+    barraHerramientasSalida.add(guardarBtn);
 
-    JPanel statusBar = new JPanel(new BorderLayout());
-    statusBar.setName("statusBar");
-    statusBar.setPreferredSize(new Dimension(0, 22));
-    statusBar.setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
-    statusLabel = new JLabel("Ready");
-    statusLabel.setFont(new Font(UI_FONT_NAME, Font.PLAIN, 11));
-    progressBar = new JProgressBar();
-    progressBar.setPreferredSize(new Dimension(120, 14));
-    progressBar.setIndeterminate(false);
-    progressBar.setVisible(false);
-    progressBar.setBorderPainted(false);
-    JPanel statusRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-    statusRight.setOpaque(false);
-    statusRight.add(progressBar);
-    statusBar.add(statusLabel, BorderLayout.WEST);
-    statusBar.add(statusRight, BorderLayout.EAST);
+    barraPestañasSalida.add(pestañaSalida, BorderLayout.WEST);
+    barraPestañasSalida.add(barraHerramientasSalida, BorderLayout.EAST);
 
-    splitPane.setLeftComponent(leftPanel);
-    splitPane.setRightComponent(rightPanel);
-    mainPanel.add(activityBar, BorderLayout.WEST);
-    mainPanel.add(splitPane, BorderLayout.CENTER);
-    mainPanel.add(statusBar, BorderLayout.SOUTH);
-    add(mainPanel);
+    // Área de resultados
+    areaResultado = new JTextArea();
+    areaResultado.setFont(fuenteCodigo);
+    areaResultado.setEditable(false);
+    areaResultado.setLineWrap(true);
+    areaResultado.setWrapStyleWord(true);
+    areaResultado.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 8));
 
-    editor.setText("// SAT Problem Example\n// Comments start with // or c\np cnf 3 2\n1 -3 0\n2 3 -1 0\n");
+    JScrollPane scrollResultado = new JScrollPane(areaResultado);
+    scrollResultado.setBorder(null);
 
-    setupKeyboardShortcuts();
+    panelDerecho.add(barraPestañasSalida, BorderLayout.NORTH);
+    panelDerecho.add(scrollResultado, BorderLayout.CENTER);
+
+    // Barra de estado (estilo VS Code)
+    JPanel barraEstado = new JPanel(new BorderLayout());
+    barraEstado.setName("barraEstado");
+    barraEstado.setPreferredSize(new Dimension(0, 22));
+    barraEstado.setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
+
+    etiquetaEstado = new JLabel("Listo");
+    etiquetaEstado.setFont(new Font(FUENTE_UI, Font.PLAIN, 11));
+
+    // Barra de progreso en barra de estado
+    barraProgreso = new JProgressBar();
+    barraProgreso.setPreferredSize(new Dimension(120, 14));
+    barraProgreso.setIndeterminate(false);
+    barraProgreso.setVisible(false);
+    barraProgreso.setBorderPainted(false);
+
+    JPanel estadoDerecha = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    estadoDerecha.setOpaque(false);
+    estadoDerecha.add(barraProgreso);
+
+    barraEstado.add(etiquetaEstado, BorderLayout.WEST);
+    barraEstado.add(estadoDerecha, BorderLayout.EAST);
+
+    // Ensamblar diseño principal
+    panelDividido.setLeftComponent(panelIzquierdo);
+    panelDividido.setRightComponent(panelDerecho);
+
+    panelPrincipal.add(barraActividad, BorderLayout.WEST);
+    panelPrincipal.add(panelDividido, BorderLayout.CENTER);
+    panelPrincipal.add(barraEstado, BorderLayout.SOUTH);
+
+    add(panelPrincipal);
+
+    // Ejemplo por defecto en el editor
+    editor.setText("// Ejemplo de problema SAT\n// Los comentarios empiezan con // o c\np cnf 3 2\n1 -3 0\n2 3 -1 0\n");
+
+    // Atajos de teclado
+    configurarAtajosTeclado();
+
+    // Tamaño y posición de ventana
     setSize(1400, 800);
     setLocationRelativeTo(null);
   }
 
-  static class RoundedBorder implements Border {
-    private final int radius;
-    private final Color shadowColor;
+  private void configurarAtajosTeclado() {
+    getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+            .put(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK), "abrir");
+    getRootPane().getActionMap().put("abrir", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) { cargarCNFDesdeArchivo(); }
+    });
 
-    RoundedBorder(int radius, Color shadowColor) {
-      this.radius = radius;
-      this.shadowColor = shadowColor;
-    }
+    getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+            .put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "ejecutar");
+    getRootPane().getActionMap().put("ejecutar", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) { iniciarResolucion(); }
+    });
 
-    @Override
-    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-      Graphics2D g2 = (Graphics2D) g.create();
-      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g2.setColor(shadowColor);
-      g2.fillRoundRect(x + 1, y + 1, width - 2, height - 2, radius, radius);
-      g2.setColor(((JComponent) c).getForeground());
-      g2.setStroke(new BasicStroke(1.2f));
-      g2.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-      g2.dispose();
-    }
-
-    @Override
-    public Insets getBorderInsets(Component c) {
-      return new Insets(3, 3, 3, 3);
-    }
-
-    @Override
-    public boolean isBorderOpaque() {
-      return false;
-    }
+    getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+            .put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "copiarResultado");
+    getRootPane().getActionMap().put("copiarResultado", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) { copiarResultadoAlPortapapeles(); }
+    });
   }
 
-  private void applyTheme(Theme t) {
-    Color bg, panelBg, sidebarBg, fg, accent, lineBg, lineFg, border, buttonBg, buttonHover;
-    boolean isDark = t == Theme.DARK || t == Theme.MINNT_DARK;
+  // Cambia crearBotonVSCode para soportar bordes redondeados y sombra en MINNT
+  private JButton crearBotonVSCode(String texto, int tecla) {
+    JButton btn = new JButton(texto);
+    btn.setFont(new Font(FUENTE_UI, Font.PLAIN, 11));
+    btn.setFocusPainted(false);
+    btn.setContentAreaFilled(true);
+    btn.setOpaque(true);
+    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    btn.setMargin(new Insets(4, 12, 4, 12));
+    if (tecla != 0) {
+      String atajo = tecla == KeyEvent.VK_F5 ? "F5" : "Ctrl+" + KeyEvent.getKeyText(tecla);
+      btn.setToolTipText(texto + " (" + atajo + ")");
+    }
+    // Bordes redondeados y sombra para MINNT
+    if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+      btn.setBorder(BorderFactory.createCompoundBorder(
+              new javax.swing.border.LineBorder(new Color(255,122,0,80), 2, true),
+              BorderFactory.createEmptyBorder(2, 8, 2, 8)
+      ));
+      btn.setBackground(temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_ACENTO : MINNT_CLARO_ACENTO);
+      btn.setForeground(temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_TEXTO : MINNT_CLARO_TEXTO);
+      btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
+        @Override
+        public void paint(Graphics g, JComponent c) {
+          Graphics2D g2 = (Graphics2D) g.create();
+          g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+          g2.setColor(btn.getBackground());
+          g2.fillRoundRect(0, 0, btn.getWidth(), btn.getHeight(), 18, 18);
+          g2.setColor(new Color(0,0,0,30));
+          g2.fillRoundRect(3, 3, btn.getWidth()-6, btn.getHeight()-6, 14, 14);
+          super.paint(g2, c);
+          g2.dispose();
+        }
+      });
+    }
+    return btn;
+  }
+
+  // Cambia crearBotonIcono para usar iconos dibujados
+  private JButton crearBotonIcono(String tooltip, String tipo) {
+    JButton btn = new JButton();
+    btn.setToolTipText(tooltip);
+    btn.setFocusPainted(false);
+    btn.setContentAreaFilled(false);
+    btn.setOpaque(false);
+    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    btn.setPreferredSize(new Dimension(28, 24));
+    btn.setBorder(BorderFactory.createEmptyBorder());
+    btn.setIcon(new Icon() {
+      public void paintIcon(Component c, Graphics g, int x, int y) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if (tipo.equals("Copiar")) {
+          g2.setColor(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? Color.WHITE : Color.BLACK);
+          g2.drawRect(x+6, y+6, 12, 12);
+          g2.drawRect(x+10, y+2, 8, 8);
+        } else if (tipo.equals("Guardar")) {
+          g2.setColor(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? Color.WHITE : Color.BLACK);
+          g2.fillRect(x+6, y+6, 12, 12);
+          g2.setColor(temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO ? MINNT_OSCURO_ACENTO : VS_OSCURO_ACENTO);
+          g2.fillRect(x+10, y+12, 4, 4);
+        }
+        g2.dispose();
+      }
+      public int getIconWidth() { return 24; }
+      public int getIconHeight() { return 20; }
+    });
+    return btn;
+  }
+
+  // Método para crear un icono coloreado simple (círculo)
+  private Icon crearIconoColoreado(int ancho, int alto, Color color) {
+    return new Icon() {
+      @Override
+      public void paintIcon(Component c, Graphics g, int x, int y) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(color);
+        g2.fillOval(x, y, ancho, alto);
+        g2.setColor(new Color(0,0,0,40));
+        g2.drawOval(x, y, ancho, alto);
+        g2.dispose();
+      }
+      @Override
+      public int getIconWidth() { return ancho; }
+      @Override
+      public int getIconHeight() { return alto; }
+    };
+  }
+
+  // Aplica fondo y borde a paneles principales y JSplitPane
+  private void aplicarTema(Tema t) {
+    Color fondo, fondoPanel, fondoBarra, texto, acento, fondoLinea, textoLinea, borde, fondoBoton, hoverBoton;
 
     switch (t) {
-      case DARK -> {
-        bg = VS_DARK_BG; panelBg = VS_DARK_PANEL; sidebarBg = VS_DARK_SIDEBAR;
-        fg = VS_DARK_FG; accent = VS_DARK_ACCENT; lineBg = VS_DARK_LINE_BG;
-        lineFg = VS_DARK_LINE_FG; border = VS_DARK_BORDER;
-        buttonBg = VS_DARK_BUTTON; buttonHover = VS_DARK_BUTTON_HOVER;
+      case OSCURO -> {
+        fondo = VS_OSCURO_FONDO; fondoPanel = VS_OSCURO_PANEL; fondoBarra = VS_OSCURO_BARRA;
+        texto = VS_OSCURO_TEXTO; acento = VS_OSCURO_ACENTO; fondoLinea = VS_OSCURO_LINEA_FONDO;
+        textoLinea = VS_OSCURO_LINEA_TEXTO; borde = VS_OSCURO_BORDE;
+        fondoBoton = VS_OSCURO_BOTON; hoverBoton = VS_OSCURO_BOTON_HOVER;
       }
-      case LIGHT -> {
-        bg = VS_LIGHT_BG; panelBg = VS_LIGHT_PANEL; sidebarBg = VS_LIGHT_SIDEBAR;
-        fg = VS_LIGHT_FG; accent = VS_LIGHT_ACCENT; lineBg = VS_LIGHT_LINE_BG;
-        lineFg = VS_LIGHT_LINE_FG; border = VS_LIGHT_BORDER;
-        buttonBg = Color.WHITE; buttonHover = new Color(240, 240, 240);
+      case CLARO -> {
+        fondo = VS_CLARO_FONDO; fondoPanel = VS_CLARO_PANEL; fondoBarra = VS_CLARO_BARRA;
+        texto = VS_CLARO_TEXTO; acento = VS_CLARO_ACENTO; fondoLinea = VS_CLARO_LINEA_FONDO;
+        textoLinea = VS_CLARO_LINEA_TEXTO; borde = VS_CLARO_BORDE;
+        fondoBoton = VS_CLARO_BOTON; hoverBoton = VS_CLARO_BOTON_HOVER;
       }
-      case MINNT_DARK -> {
-        bg = MINNT_DARK_BG; panelBg = MINNT_DARK_PANEL; sidebarBg = MINNT_DARK_PANEL;
-        fg = MINNT_DARK_FG; accent = MINNT_DARK_ACCENT; lineBg = MINNT_DARK_LINE_BG;
-        lineFg = MINNT_DARK_LINE_FG; border = MINNT_DARK_ACCENT;
-        buttonBg = MINNT_DARK_ACCENT; buttonHover = MINNT_DARK_ACCENT.brighter();
+      case MINNT_OSCURO -> {
+        fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
+        texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
+        textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
+        fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
       }
-      case MINNT_LIGHT -> {
-        bg = MINNT_LIGHT_BG; panelBg = MINNT_LIGHT_PANEL; sidebarBg = MINNT_LIGHT_PANEL;
-        fg = MINNT_LIGHT_FG; accent = MINNT_LIGHT_ACCENT; lineBg = MINNT_LIGHT_LINE_BG;
-        lineFg = MINNT_LIGHT_LINE_FG; border = MINNT_LIGHT_ACCENT;
-        buttonBg = MINNT_LIGHT_ACCENT; buttonHover = MINNT_LIGHT_ACCENT.darker();
+      case MINNT_CLARO -> {
+        fondo = MINNT_CLARO_FONDO; fondoPanel = MINNT_CLARO_PANEL; fondoBarra = MINNT_CLARO_PANEL;
+        texto = MINNT_CLARO_TEXTO; acento = MINNT_CLARO_ACENTO; fondoLinea = MINNT_CLARO_LINEA_FONDO;
+        textoLinea = MINNT_CLARO_LINEA_TEXTO; borde = MINNT_CLARO_ACENTO;
+        fondoBoton = MINNT_CLARO_ACENTO; hoverBoton = MINNT_CLARO_ACENTO.darker();
       }
-      default -> throw new IllegalStateException("Unexpected theme: " + t);
+      default -> {
+        fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
+        texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
+        textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
+        fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
+      }
     }
 
-    applyColorsRecursively(getContentPane(), bg, panelBg, sidebarBg, fg, accent,
-            lineBg, lineFg, border, buttonBg, buttonHover, isDark);
+    // Aplica colores recursivamente
+    aplicarColoresRecursivo(getContentPane(), fondo, fondoPanel, fondoBarra, texto, acento,
+            fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
 
-    editor.setBackground(bg);
-    editor.setForeground(fg);
-    editor.setCaretColor(fg);
-    editor.setSelectionColor(accent.darker());
-    editor.setSelectedTextColor(Color.WHITE);
-
-    resultArea.setBackground(bg);
-    resultArea.setForeground(fg);
-    resultArea.setSelectionColor(accent.darker());
-    resultArea.setSelectedTextColor(Color.WHITE);
-
-    JMenuBar menuBar = getJMenuBar();
-    if (menuBar != null) {
-      menuBar.setBackground(panelBg);
-      menuBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, border));
-      applyMenuColors(menuBar, panelBg, fg, accent);
-    }
-
-    Component statusBarComp = findComponentByName(getContentPane(), "statusBar");
-    if (statusBarComp instanceof JPanel) {
-      JPanel statusBarPanel = (JPanel) statusBarComp;
-      statusBarPanel.setBackground(accent);
-      statusLabel.setForeground(Color.WHITE);
-    }
-
-    progressBar.setBackground(panelBg);
-    progressBar.setForeground(accent);
-
-    Component lineNumbers = getEditorRowHeader();
-    if (lineNumbers instanceof LineNumberView) {
-      ((LineNumberView) lineNumbers).setColors(lineBg, lineFg);
-    }
-
-    if (t == Theme.MINNT_DARK || t == Theme.MINNT_LIGHT) {
-      Color shadow = t == Theme.MINNT_DARK ? new Color(0, 0, 0, 50) : new Color(0, 0, 0, 20);
-      for (JButton btn : new JButton[]{solveButton, clearBtn, openBtn}) {
-        btn.setBorder(new RoundedBorder(8, shadow));
-        btn.setOpaque(true);
+    // Paneles principales y JSplitPane
+    for (Component comp : getContentPane().getComponents()) {
+      if (comp instanceof JPanel p) {
+        p.setBackground(fondoPanel);
+        if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
+          p.setBorder(BorderFactory.createCompoundBorder(
+                  new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
+                  BorderFactory.createEmptyBorder(8, 8, 8, 8)
+          ));
+        } else {
+          p.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        }
       }
-      resultArea.setBorder(BorderFactory.createCompoundBorder(
-              new RoundedBorder(8, shadow),
-              BorderFactory.createEmptyBorder(8, 12, 8, 8)
-      ));
-      editor.setBorder(BorderFactory.createCompoundBorder(
-              new RoundedBorder(8, shadow),
-              BorderFactory.createEmptyBorder(8, 12, 8, 8)
-      ));
-    } else {
-      solveButton.setBorder(BorderFactory.createEmptyBorder(4, 12, 4, 12));
-      clearBtn.setBorder(BorderFactory.createEmptyBorder(4, 12, 4, 12));
-      openBtn.setBorder(BorderFactory.createEmptyBorder(4, 12, 4, 12));
-      resultArea.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 8));
-      editor.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 8));
+      if (comp instanceof JSplitPane sp) {
+        sp.setBackground(fondoPanel);
+        sp.setDividerSize(6);
+        sp.setBorder(BorderFactory.createLineBorder(borde, 2, true));
+      }
+    }
+
+    // Barra de estado
+    Component barraEstadoComp = buscarComponentePorNombre(getContentPane(), "barraEstado");
+    if (barraEstadoComp instanceof JPanel barraEstadoPanel) {
+      barraEstadoPanel.setBackground(acento);
+      barraEstadoPanel.setBorder(BorderFactory.createMatteBorder(0,0,0,0,acento));
+      etiquetaEstado.setForeground(Color.WHITE);
+      if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
+        barraEstadoPanel.setBorder(BorderFactory.createCompoundBorder(
+                new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
+                BorderFactory.createEmptyBorder(2, 12, 2, 12)
+        ));
+      }
+    }
+
+    // Modales con tema
+    UIManager.put("OptionPane.background", fondoPanel);
+    UIManager.put("Panel.background", fondoPanel);
+    UIManager.put("OptionPane.messageForeground", texto);
+
+    // Números de línea
+    Component numerosLinea = obtenerVistaNumerosLinea();
+    if (numerosLinea instanceof VistaNumerosLinea) {
+      ((VistaNumerosLinea) numerosLinea).setColores(fondoLinea, textoLinea);
     }
 
     SwingUtilities.updateComponentTreeUI(this);
     repaint();
   }
 
-  private void applyColorsRecursively(Container container, Color bg, Color panelBg,
-                                      Color sidebarBg, Color fg, Color accent,
-                                      Color lineBg, Color lineFg, Color border,
-                                      Color buttonBg, Color buttonHover, boolean isDark) {
-    container.setBackground(panelBg);
-    container.setForeground(fg);
+  // Aplica colores recursivamente a todos los componentes
+  private void aplicarColoresRecursivo(Container contenedor, Color fondo, Color fondoPanel,
+                                       Color fondoBarra, Color texto, Color acento, Color fondoLinea, Color textoLinea, Color borde,
+                                       Color fondoBoton, Color hoverBoton) {
+    contenedor.setBackground(fondo);
+    contenedor.setForeground(texto);
 
-    for (Component comp : container.getComponents()) {
-      if (comp instanceof JPanel) {
-        comp.setBackground(panelBg);
-        comp.setForeground(fg);
-        if (comp instanceof Container) {
-          applyColorsRecursively((Container) comp, bg, panelBg, sidebarBg, fg, accent,
-                  lineBg, lineFg, border, buttonBg, buttonHover, isDark);
+    for (Component comp : contenedor.getComponents()) {
+      if (comp instanceof JPanel p) {
+        p.setBackground(fondoPanel);
+        p.setForeground(texto);
+        if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+          p.setBorder(BorderFactory.createCompoundBorder(
+                  new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
+                  BorderFactory.createEmptyBorder(8, 8, 8, 8)
+          ));
+        } else {
+          p.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         }
-      } else if (comp instanceof JButton) {
-        JButton btn = (JButton) comp;
-        if (btn.getText().equals("Run") || btn.getText().equals("Cancel") ||
-                btn.getText().equals("Clear") || btn.getText().equals("Open")) {
-          btn.setBackground(buttonBg);
-          btn.setForeground(isDark ? Color.WHITE : Color.BLACK);
-          btn.setBorder(BorderFactory.createEmptyBorder(4, 12, 4, 12));
-          btn.setFocusPainted(false);
-          btn.setOpaque(true);
-          btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-          Color finalButtonHover = buttonHover;
-          btn.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { btn.setBackground(finalButtonHover); }
-            public void mouseExited(MouseEvent e) { btn.setBackground(buttonBg); }
+      } else if (comp instanceof JButton btn) {
+        btn.setBackground(fondoBoton);
+        btn.setForeground(texto);
+        btn.setBorder(BorderFactory.createLineBorder(borde, temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO ? 2 : 1, true));
+        btn.setFocusPainted(false);
+        btn.setOpaque(true);
+        btn.setContentAreaFilled(true);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        for (MouseListener ml : btn.getMouseListeners()) {
+          btn.removeMouseListener(ml);
+        }
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+          public void mouseEntered(java.awt.event.MouseEvent evt) {
+            btn.setBackground(hoverBoton);
+          }
+          public void mouseExited(java.awt.event.MouseEvent evt) {
+            btn.setBackground(fondoBoton);
+          }
+        });
+        if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+          btn.setBorder(BorderFactory.createCompoundBorder(
+                  new javax.swing.border.LineBorder(new Color(255,122,0,80), 2, true),
+                  BorderFactory.createEmptyBorder(2, 8, 2, 8)
+          ));
+          btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+              Graphics2D g2 = (Graphics2D) g.create();
+              g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+              g2.setColor(btn.getBackground());
+              g2.fillRoundRect(0, 0, btn.getWidth(), btn.getHeight(), 18, 18);
+              g2.setColor(new Color(0,0,0,30));
+              g2.fillRoundRect(3, 3, btn.getWidth()-6, btn.getHeight()-6, 14, 14);
+              super.paint(g2, c);
+              g2.dispose();
+            }
           });
         } else {
-          btn.setBackground(new Color(0, true));
-          btn.setForeground(fg);
-          btn.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
-          btn.setOpaque(false);
+          btn.setUI(new javax.swing.plaf.basic.BasicButtonUI());
         }
-      } else if (comp instanceof JLabel) {
-        comp.setForeground(fg);
-      } else if (comp instanceof JScrollPane) {
-        comp.setBackground(panelBg);
-        JScrollPane sp = (JScrollPane) comp;
-        sp.getViewport().setBackground(bg);
-        sp.setBorder(BorderFactory.createLineBorder(border, 1));
+      } else if (comp instanceof JLabel lbl) {
+        lbl.setForeground(texto);
+      } else if (comp instanceof JScrollPane sp) {
+        sp.setBackground(fondoPanel);
+        sp.getViewport().setBackground(fondoPanel);
+        sp.setBorder(BorderFactory.createLineBorder(borde, 1));
       }
       if (comp instanceof Container) {
-        applyColorsRecursively((Container) comp, bg, panelBg, sidebarBg, fg, accent,
-                lineBg, lineFg, border, buttonBg, buttonHover, isDark);
+        aplicarColoresRecursivo((Container) comp, fondo, fondoPanel, fondoBarra, texto, acento,
+                fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
       }
     }
   }
 
-  private void applyMenuColors(JMenuBar menuBar, Color bg, Color fg, Color accent) {
-    for (int i = 0; i < menuBar.getMenuCount(); i++) {
-      JMenu menu = menuBar.getMenu(i);
-      menu.setBackground(bg);
-      menu.setForeground(fg);
-      applyMenuItemColors(menu, bg, fg, accent);
+  private void aplicarColoresMenu(JMenuBar barraMenu, Color fondo, Color texto, Color acento) {
+    for (int i = 0; i < barraMenu.getMenuCount(); i++) {
+      JMenu menu = barraMenu.getMenu(i);
+      menu.setBackground(fondo);
+      menu.setForeground(texto);
+      aplicarColoresItemsMenu(menu, fondo, texto, acento);
     }
   }
 
-  private void applyMenuItemColors(JMenu menu, Color bg, Color fg, Color accent) {
+  private void aplicarColoresItemsMenu(JMenu menu, Color fondo, Color texto, Color acento) {
     for (Component comp : menu.getMenuComponents()) {
       if (comp instanceof JMenuItem) {
-        comp.setBackground(bg);
-        comp.setForeground(fg);
+        comp.setBackground(fondo);
+        comp.setForeground(texto);
         if (comp instanceof JMenu) {
-          applyMenuItemColors((JMenu) comp, bg, fg, accent);
+          aplicarColoresItemsMenu((JMenu) comp, fondo, texto, acento);
         }
       }
     }
   }
 
-  private Component findComponentByName(Container container, String name) {
-    for (Component comp : container.getComponents()) {
-      if (name.equals(comp.getName())) return comp;
+  private Component buscarComponentePorNombre(Container contenedor, String nombre) {
+    for (Component comp : contenedor.getComponents()) {
+      if (nombre.equals(comp.getName())) {
+        return comp;
+      }
       if (comp instanceof Container) {
-        Component found = findComponentByName((Container) comp, name);
-        if (found != null) return found;
+        Component encontrado = buscarComponentePorNombre((Container) comp, nombre);
+        if (encontrado != null) return encontrado;
       }
     }
     return null;
   }
 
-  private Component getEditorRowHeader() {
+  private Component obtenerVistaNumerosLinea() {
     Container p = editor.getParent();
     if (p instanceof JViewport) {
       Container sp = p.getParent();
@@ -504,211 +653,151 @@ public class MinntSATSolver extends JFrame {
     return null;
   }
 
-  private void showThemedDialog(String title, JTextArea content) {
-    JDialog dialog = new JDialog(this, title, Dialog.ModalityType.APPLICATION_MODAL);
-    dialog.setSize(700, 500);
-    dialog.setLocationRelativeTo(this);
-    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  // Diálogos
+  private void mostrarAcercaDe() {
+    String acerca = """
+        Minnt SAT Solver - Edición Java
+        Versión: 2.0
 
-    JPanel panel = new JPanel(new BorderLayout());
-    Color bg = currentTheme == Theme.DARK || currentTheme == Theme.MINNT_DARK ? VS_DARK_BG : VS_LIGHT_BG;
-    panel.setBackground(bg);
+        Características:
+        • Algoritmo DPLL con optimizaciones
+        • Propagación de unidades y eliminación de literales puros
+        • Heurística de ordenamiento por frecuencia de variables
+        • Múltiples temas (VS Oscuro/Claro, MINNT Oscuro/Claro)
+        • Exporta resultados a la carpeta Descargas
+        • Soporte completo de atajos de teclado
 
-    content.setFont(new Font(UI_FONT_NAME, Font.PLAIN, 12));
-    content.setEditable(false);
-    content.setLineWrap(true);
-    content.setWrapStyleWord(true);
-    content.setBackground(bg);
-    content.setForeground(currentTheme == Theme.DARK || currentTheme == Theme.MINNT_DARK ? VS_DARK_FG : VS_LIGHT_FG);
+        Atajos:
+        • Ctrl+O: Abrir archivo
+        • F5: Ejecutar solver
+        • Ctrl+Shift+C: Copiar resultado
+        """;
 
-    JScrollPane scroll = new JScrollPane(content);
-    scroll.setBorder(null);
+    JTextArea areaTexto = new JTextArea(acerca);
+    areaTexto.setEditable(false);
+    areaTexto.setFont(new Font(FUENTE_UI, Font.PLAIN, 12));
+    areaTexto.setOpaque(true);
+    areaTexto.setBackground(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? VS_OSCURO_PANEL : VS_CLARO_PANEL);
+    areaTexto.setForeground(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? VS_OSCURO_TEXTO : VS_CLARO_TEXTO);
 
-    JButton closeBtn = new JButton("Close");
-    closeBtn.addActionListener(e -> dialog.dispose());
-
-    JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    btnPanel.setBackground(bg);
-    btnPanel.add(closeBtn);
-
-    panel.add(scroll, BorderLayout.CENTER);
-    panel.add(btnPanel, BorderLayout.SOUTH);
-    dialog.add(panel);
-    dialog.setVisible(true);
+    JOptionPane.showMessageDialog(this, areaTexto, "Acerca de Minnt SAT Solver",
+            JOptionPane.INFORMATION_MESSAGE);
   }
 
-  private void showAbout() {
-    JTextArea textArea = new JTextArea("""
-                Minnt SAT Solver - Java Edition
-                Version: 2.0
-                Features:
-                • DPLL algorithm with optimizations
-                • Unit propagation and pure literal elimination  
-                • Frequency-based variable ordering heuristic
-                • Multiple themes (VS Dark/Light, MINNT Dark/Light)
-                • Export results to Downloads folder
-                • Full keyboard shortcut support
-                
-                Shortcuts:
-                • Ctrl+O: Open file
-                • F5: Run solver
-                • Ctrl+Shift+C: Copy result
-                """);
-    showThemedDialog("About Minnt SAT Solver", textArea);
+  private void mostrarManual() {
+    String manual = """
+        Minnt SAT Solver - Manual de usuario
+
+        FORMATOS SOPORTADOS:
+        • Formato DIMACS CNF
+        • Comentarios: líneas que empiezan con 'c' o '//'
+        • Cabecera: 'p cnf <variables> <cláusulas>'
+        • Cláusulas: literales separados por espacios terminando en '0'
+
+        USO:
+        1. Abre un archivo CNF (Archivo → Abrir o Ctrl+O)
+        2. Edita el problema en el panel izquierdo
+        3. Ejecuta el solver (Ejecutar → Resolver SAT o F5)
+        4. Visualiza resultados en el panel derecho
+        5. Copia resultados (Ctrl+Shift+C) o guarda en archivo
+
+        EXPORTAR:
+        Los resultados se guardan en tu carpeta Descargas con marca de tiempo:
+        'minnt_result_<timestamp>.txt'
+
+        TEMAS:
+        • Oscuro/Claro: Temas Visual Studio Code
+        • MINNT Oscuro/Claro: Temas personalizados naranja neumorfismo
+
+        ATAJOS DE TECLADO:
+        • Ctrl+O: Abrir archivo
+        • F5: Ejecutar solver
+        • Ctrl+Shift+C: Copiar resultado al portapapeles
+        • Atajos estándar de edición de texto en el editor
+        """;
+
+    JTextArea areaTexto = new JTextArea(manual);
+    areaTexto.setEditable(false);
+    areaTexto.setFont(new Font(FUENTE_CODIGO, Font.PLAIN, 12));
+    areaTexto.setLineWrap(true);
+    areaTexto.setWrapStyleWord(true);
+    areaTexto.setOpaque(true);
+    areaTexto.setBackground(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? VS_OSCURO_PANEL : VS_CLARO_PANEL);
+    areaTexto.setForeground(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? VS_OSCURO_TEXTO : VS_CLARO_TEXTO);
+
+    JScrollPane scroll = new JScrollPane(areaTexto);
+    scroll.setPreferredSize(new Dimension(600, 400));
+    scroll.setBackground(areaTexto.getBackground());
+    scroll.getViewport().setBackground(areaTexto.getBackground());
+
+    JOptionPane.showMessageDialog(this, scroll, "Manual de usuario",
+            JOptionPane.INFORMATION_MESSAGE);
   }
 
-  private void showManual() {
-    JTextArea textArea = new JTextArea("""
-                Minnt SAT Solver - User Manual
-                SUPPORTED FORMATS:
-                • DIMACS CNF format
-                • Comments: lines starting with 'c' or '//'
-                • Header: 'p cnf <variables> <clauses>'
-                • Clauses: space-separated literals ending with '0'
-                
-                USAGE:
-                1. Open a CNF file (File → Open or Ctrl+O)
-                2. Edit the problem in the left editor panel
-                3. Run the solver (Run → Solve SAT or F5)
-                4. View results in the right output panel
-                5. Copy results (Ctrl+Shift+C) or save to file
-                
-                EXPORT:
-                Results are saved to your Downloads folder with timestamp:
-                'minnt_result_<timestamp>.txt'
-                
-                THEMES:
-                • Dark/Light: Visual Studio Code themes
-                • MINNT Dark/Light: Custom neumorphic orange themes
-                
-                KEYBOARD SHORTCUTS:
-                • Ctrl+O: Open file
-                • F5: Run solver  
-                • Ctrl+Shift+C: Copy result to clipboard
-                • Standard text editing shortcuts in editor
-                """);
-    showThemedDialog("User Manual", textArea);
-  }
-
-  private void onClose() {
-    if ("Cancel".equals(solveButton.getText())) {
-      int option = JOptionPane.showConfirmDialog(this,
-              "Solver is running. Cancel and exit?", "Exit",
+  private void alCerrar() {
+    if ("Cancelar".equals(botonResolver.getText())) {
+      int opcion = JOptionPane.showConfirmDialog(this,
+              "El solver está en ejecución. ¿Cancelar y salir?", "Salir",
               JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-      if (option != JOptionPane.YES_OPTION) return;
-      cancelRequested.set(true);
+      if (opcion != JOptionPane.YES_OPTION) return;
+      cancelarSolicitado.set(true);
     }
     dispose();
     System.exit(0);
   }
 
-  private void setupKeyboardShortcuts() {
-    getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-            .put(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK), "open");
-    getRootPane().getActionMap().put("open", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) { loadCNFFromFile(); }
-    });
-    getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-            .put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "run");
-    getRootPane().getActionMap().put("run", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) { startSolve(); }
-    });
-    getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-            .put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "copyResult");
-    getRootPane().getActionMap().put("copyResult", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) { copyResultToClipboard(); }
-    });
-  }
-
-  private JButton createVSCodeButton(String text, int keyCode) {
-    JButton btn = new JButton(text);
-    btn.setFont(new Font(UI_FONT_NAME, Font.PLAIN, 11));
-    btn.setFocusPainted(false);
-    btn.setBorderPainted(true);
-    btn.setContentAreaFilled(true);
-    btn.setOpaque(true);
-    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    btn.setMargin(new Insets(4, 12, 4, 12));
-    if (keyCode != 0) {
-      String shortcut = keyCode == KeyEvent.VK_F5 ? "F5" : "Ctrl+" + KeyEvent.getKeyText(keyCode);
-      btn.setToolTipText(text + " (" + shortcut + ")");
-    }
-    return btn;
-  }
-
-  private JButton createIconButton(String tooltip, String icon) {
-    JButton btn = new JButton(icon);
-    btn.setFont(new Font("Arial", Font.PLAIN, 12));
-    btn.setToolTipText(tooltip);
-    btn.setFocusPainted(false);
-    btn.setBorderPainted(false);
-    btn.setContentAreaFilled(false);
-    btn.setOpaque(false);
-    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    btn.setMargin(new Insets(2, 4, 2, 4));
-    btn.setPreferredSize(new Dimension(24, 20));
-    return btn;
-  }
-
-  private Icon createColoredIcon(int width, int height, Color color) {
-    return new Icon() {
-      public void paintIcon(Component c, Graphics g, int x, int y) {
-        g.setColor(color);
-        g.fillOval(x + 2, y + 2, width - 4, height - 4);
-      }
-      public int getIconWidth() { return width; }
-      public int getIconHeight() { return height; }
-    };
-  }
-
-  // File operations
-  private void loadCNFFromFile() {
-    JFileChooser fileChooser = new JFileChooser();
-    fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+  // Operaciones de archivo
+  private void cargarCNFDesdeArchivo() {
+    JFileChooser selectorArchivo = new JFileChooser();
+    selectorArchivo.setFileFilter(new javax.swing.filechooser.FileFilter() {
       @Override
-      public boolean accept(File file) {
-        if (file.isDirectory()) return true;
-        String name = file.getName().toLowerCase();
-        return name.endsWith(".cnf") || name.endsWith(".txt");
+      public boolean accept(File archivo) {
+        if (archivo.isDirectory()) return true;
+        String nombre = archivo.getName().toLowerCase();
+        return nombre.endsWith(".cnf") || nombre.endsWith(".txt");
       }
+
       @Override
       public String getDescription() {
-        return "CNF Files (*.cnf, *.txt)";
+        return "Archivos CNF (*.cnf, *.txt)";
       }
     });
-    int result = fileChooser.showOpenDialog(this);
-    if (result == JFileChooser.APPROVE_OPTION) {
-      File file = fileChooser.getSelectedFile();
+
+    int resultado = selectorArchivo.showOpenDialog(this);
+    if (resultado == JFileChooser.APPROVE_OPTION) {
+      File archivo = selectorArchivo.getSelectedFile();
       try {
-        byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
-        String content = new String(bytes, StandardCharsets.UTF_8);
-        editor.setText(content);
-        int[] counts = countVarsAndClauses(content);
-        if (counts[0] >= 0) {
-          statusLabel.setText(String.format("Loaded: %s | Variables: %d | Clauses: %d",
-                  file.getName(), counts[0], counts[1]));
+        byte[] bytes = java.nio.file.Files.readAllBytes(archivo.toPath());
+        String contenido = new String(bytes, StandardCharsets.UTF_8);
+        editor.setText(contenido);
+
+        int[] conteos = contarVarsYClausulas(contenido);
+        if (conteos[0] >= 0) {
+          etiquetaEstado.setText(String.format("Cargado: %s | Variables: %d | Cláusulas: %d",
+                  archivo.getName(), conteos[0], conteos[1]));
         } else {
-          statusLabel.setText("Loaded: " + file.getName());
+          etiquetaEstado.setText("Cargado: " + archivo.getName());
         }
+
         editor.setCaretPosition(0);
       } catch (IOException ex) {
         JOptionPane.showMessageDialog(this,
-                "Error reading file:\n" + ex.getMessage(),
-                "File Error", JOptionPane.ERROR_MESSAGE);
+                "Error al leer el archivo:\n" + ex.getMessage(),
+                "Error de archivo", JOptionPane.ERROR_MESSAGE);
       }
     }
   }
 
-  private int[] countVarsAndClauses(String text) {
-    for (String line : text.split("\\R")) {
-      String trimmed = line.trim();
-      if (trimmed.startsWith("p ")) {
-        String[] parts = trimmed.split("\\s+");
-        if (parts.length >= 4) {
+  private int[] contarVarsYClausulas(String texto) {
+    for (String linea : texto.split("\\R")) {
+      String recortada = linea.trim();
+      if (recortada.startsWith("p ")) {
+        String[] partes = recortada.split("\\s+");
+        if (partes.length >= 4) {
           try {
-            int vars = Integer.parseInt(parts[2]);
-            int clauses = Integer.parseInt(parts[3]);
-            return new int[]{vars, clauses};
+            int vars = Integer.parseInt(partes[2]);
+            int clausulas = Integer.parseInt(partes[3]);
+            return new int[]{vars, clausulas};
           } catch (NumberFormatException ignored) {}
         }
       }
@@ -716,357 +805,446 @@ public class MinntSATSolver extends JFrame {
     return new int[]{-1, -1};
   }
 
-  private void copyResultToClipboard() {
-    String text = resultArea.getText();
-    if (text == null || text.trim().isEmpty()) {
-      JOptionPane.showMessageDialog(this, "No results to copy.",
-              "Information", JOptionPane.INFORMATION_MESSAGE);
+  // Copiar resultado al portapapeles
+  private void copiarResultadoAlPortapapeles() {
+    String texto = areaResultado.getText();
+    if (texto == null || texto.trim().isEmpty()) {
+      JOptionPane.showMessageDialog(this, "No hay resultados para copiar.",
+              "Información", JOptionPane.INFORMATION_MESSAGE);
       return;
     }
-    StringSelection selection = new StringSelection(text);
-    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
-    statusLabel.setText("Results copied to clipboard");
-    javax.swing.Timer timer = new javax.swing.Timer(2000, e -> statusLabel.setText("Ready"));
-    timer.setRepeats(false);
-    timer.start();
+
+    StringSelection seleccion = new StringSelection(texto);
+    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(seleccion, null);
+    etiquetaEstado.setText("Resultados copiados al portapapeles");
+
+    javax.swing.Timer temporizador = new javax.swing.Timer(2000, e -> etiquetaEstado.setText("Listo"));
+    temporizador.setRepeats(false);
+    temporizador.start();
   }
 
-  private void exportResultToDownloads() {
-    String text = resultArea.getText();
-    if (text == null || text.trim().isEmpty()) {
-      JOptionPane.showMessageDialog(this, "No results to export.",
-              "Information", JOptionPane.INFORMATION_MESSAGE);
+  // Exportar resultado a carpeta Descargas
+  private void exportarResultadoADescargas() {
+    String texto = areaResultado.getText();
+    if (texto == null || texto.trim().isEmpty()) {
+      JOptionPane.showMessageDialog(this, "No hay resultados para exportar.",
+              "Información", JOptionPane.INFORMATION_MESSAGE);
       return;
     }
+
     try {
-      Path downloadsPath = Paths.get(System.getProperty("user.home"), "Downloads");
-      if (!downloadsPath.toFile().exists()) {
-        downloadsPath = Paths.get(System.getProperty("user.home")); // Fallback
+      Path rutaDescargas = Paths.get(System.getProperty("user.home"), "Downloads");
+      if (!rutaDescargas.toFile().exists()) {
+        rutaDescargas = Paths.get(System.getProperty("user.home"));
       }
+
       String timestamp = String.valueOf(System.currentTimeMillis());
-      String filename = "minnt_result_" + timestamp + ".txt";
-      Path outputPath = downloadsPath.resolve(filename);
-      java.nio.file.Files.write(outputPath, text.getBytes(StandardCharsets.UTF_8));
-      statusLabel.setText("Exported: " + filename);
+      String nombreArchivo = "minnt_result_" + timestamp + ".txt";
+      Path rutaSalida = rutaDescargas.resolve(nombreArchivo);
+
+      java.nio.file.Files.write(rutaSalida, texto.getBytes(StandardCharsets.UTF_8));
+
+      etiquetaEstado.setText("Exportado: " + nombreArchivo);
       JOptionPane.showMessageDialog(this,
-              "Results exported successfully to:\n" + outputPath.toString(),
-              "Export Complete", JOptionPane.INFORMATION_MESSAGE);
+              "Resultados exportados exitosamente a:\n" + rutaSalida.toString(),
+              "Exportación completa", JOptionPane.INFORMATION_MESSAGE);
+
     } catch (IOException ex) {
       JOptionPane.showMessageDialog(this,
-              "Error exporting file:\n" + ex.getMessage(),
-              "Export Error", JOptionPane.ERROR_MESSAGE);
+              "Error al exportar archivo:\n" + ex.getMessage(),
+              "Error de exportación", JOptionPane.ERROR_MESSAGE);
     }
   }
 
-  private void startSolve() {
-    if ("Cancel".equals(solveButton.getText())) {
-      cancelRequested.set(true);
-      statusLabel.setText("Canceling solver...");
+  // Ejecución del solver
+  private void iniciarResolucion() {
+    if ("Cancelar".equals(botonResolver.getText())) {
+      cancelarSolicitado.set(true);
+      etiquetaEstado.setText("Cancelando solver...");
       return;
     }
-    String text = editor.getText().trim();
-    if (!text.contains("p cnf")) {
+
+    String texto = editor.getText().trim();
+    if (!texto.contains("p cnf")) {
       JOptionPane.showMessageDialog(this,
-              "Invalid format. File must contain 'p cnf' header line.",
-              "Format Error", JOptionPane.ERROR_MESSAGE);
+              "Formato inválido. El archivo debe contener la línea de cabecera 'p cnf'.",
+              "Error de formato", JOptionPane.ERROR_MESSAGE);
       return;
     }
-    solveButton.setText("Cancel");
-    progressBar.setIndeterminate(true);
-    progressBar.setVisible(true);
-    statusLabel.setText("Solving...");
-    resultArea.setText("Running SAT solver...\n");
-    cancelRequested.set(false);
-    new Thread(this::runSolverTask, "SAT-Solver-Thread").start();
+
+    // Actualizar interfaz para estado de resolución
+    botonResolver.setText("Cancelar");
+    barraProgreso.setIndeterminate(true);
+    barraProgreso.setVisible(true);
+    etiquetaEstado.setText("Resolviendo...");
+    areaResultado.setText("Ejecutando solver SAT...\n");
+    cancelarSolicitado.set(false);
+
+    // Ejecutar solver en hilo de fondo
+    new Thread(this::ejecutarTareaSolver, "SAT-Solver-Thread").start();
   }
 
-  private void runSolverTask() {
+  private void ejecutarTareaSolver() {
     try {
-      String text = editor.getText();
-      long startTime = System.nanoTime();
-      String headerLine = null;
-      for (String line : text.split("\\R")) {
-        String trimmed = line.trim();
-        if (trimmed.startsWith("p ")) {
-          headerLine = trimmed;
+      String texto = editor.getText();
+      long inicio = System.nanoTime();
+
+      // Parsear cabecera
+      String lineaCabecera = null;
+      for (String linea : texto.split("\\R")) {
+        String recortada = linea.trim();
+        if (recortada.startsWith("p ")) {
+          lineaCabecera = recortada;
           break;
         }
       }
-      if (headerLine == null) {
+
+      if (lineaCabecera == null) {
         SwingUtilities.invokeLater(() -> {
           JOptionPane.showMessageDialog(this,
-                  "Missing 'p cnf' header line.",
-                  "Format Error", JOptionPane.ERROR_MESSAGE);
+                  "Falta la línea de cabecera 'p cnf'.",
+                  "Error de formato", JOptionPane.ERROR_MESSAGE);
         });
         return;
       }
-      String[] headerParts = headerLine.split("\\s+");
-      if (headerParts.length < 4) {
+
+      String[] partesCabecera = lineaCabecera.split("\\s+");
+      if (partesCabecera.length < 4) {
         SwingUtilities.invokeLater(() -> {
           JOptionPane.showMessageDialog(this,
-                  "Invalid 'p cnf' header format.",
-                  "Format Error", JOptionPane.ERROR_MESSAGE);
+                  "Formato inválido en la cabecera 'p cnf'.",
+                  "Error de formato", JOptionPane.ERROR_MESSAGE);
         });
         return;
       }
-      int numVars, numClauses;
+
+      int numVars, numClausulas;
       try {
-        numVars = Integer.parseInt(headerParts[2]);
-        numClauses = Integer.parseInt(headerParts[3]);
+        numVars = Integer.parseInt(partesCabecera[2]);
+        numClausulas = Integer.parseInt(partesCabecera[3]);
       } catch (NumberFormatException e) {
         SwingUtilities.invokeLater(() -> {
           JOptionPane.showMessageDialog(this,
-                  "Invalid numbers in 'p cnf' header.",
-                  "Format Error", JOptionPane.ERROR_MESSAGE);
+                  "Números inválidos en la cabecera 'p cnf'.",
+                  "Error de formato", JOptionPane.ERROR_MESSAGE);
         });
         return;
       }
-      List<int[]> clauses = parseDimacsToIntList(text);
-      if (clauses.isEmpty()) {
+
+      // Parsear cláusulas
+      List<int[]> clausulas = parsearDimacsAListaInt(texto);
+      if (clausulas.isEmpty()) {
         SwingUtilities.invokeLater(() -> {
           JOptionPane.showMessageDialog(this,
-                  "No valid clauses found.",
-                  "Format Error", JOptionPane.ERROR_MESSAGE);
+                  "No se encontraron cláusulas válidas.",
+                  "Error de formato", JOptionPane.ERROR_MESSAGE);
         });
         return;
       }
+
+      // Actualizar progreso
       SwingUtilities.invokeLater(() -> {
-        statusLabel.setText("Solving with DPLL algorithm...");
+        etiquetaEstado.setText("Resolviendo con algoritmo DPLL...");
       });
-      boolean[] solution = solveDPLL(clauses, numVars);
-      double elapsedSeconds = (System.nanoTime() - startTime) / 1e9;
-      final boolean[] finalSolution = solution;
-      final int finalNumVars = numVars;
+
+      // Resolver usando DPLL
+      boolean[] solucion = resolverDPLL(clausulas, numVars);
+      double segundos = (System.nanoTime() - inicio) / 1e9;
+
+      final boolean[] solucionFinal = solucion;
+      final int numVarsFinal = numVars;
+
       SwingUtilities.invokeLater(() -> {
-        StringBuilder result = new StringBuilder();
-        if (finalSolution != null) {
-          result.append("SAT\n");
-          result.append("Problem is satisfiable!\n");
-          StringBuilder assignment = new StringBuilder();
-          for (int i = 1; i <= finalNumVars; i++) {
-            assignment.append(finalSolution[i] ? i : -i);
-            if (i < finalNumVars) assignment.append(" ");
+        StringBuilder resultado = new StringBuilder();
+
+        if (solucionFinal != null) {
+          resultado.append("SAT\n\n");
+          resultado.append("¡El problema es satisfacible!\n\n");
+
+          // Asignación de variables
+          resultado.append("Asignación de variables:\n");
+          StringBuilder asignacion = new StringBuilder();
+          for (int i = 1; i <= numVarsFinal; i++) {
+            asignacion.append(solucionFinal[i] ? i : -i);
+            if (i < numVarsFinal) asignacion.append(" ");
           }
-          result.append("Variable Assignment:\n");
-          result.append(assignment.toString()).append("\n");
-          result.append("Truth Table:\n");
-          for (int i = 1; i <= finalNumVars; i++) {
-            result.append(String.format("x%d = %s\n", i, finalSolution[i] ? "TRUE" : "FALSE"));
+          resultado.append(asignacion.toString()).append("\n\n");
+
+          // Tabla de verdad
+          resultado.append("Tabla de verdad:\n");
+          for (int i = 1; i <= numVarsFinal; i++) {
+            resultado.append(String.format("%d = %s\n", i, solucionFinal[i] ? "VERDADERO" : "FALSO"));
           }
-          statusLabel.setText("SAT - Solution found");
+
+          etiquetaEstado.setText("SAT - Solución encontrada");
         } else {
-          result.append("UNSAT\n");
-          result.append("Problem is unsatisfiable.\n");
-          result.append("No solution exists for the given constraints.\n");
-          statusLabel.setText("UNSAT - No solution exists");
+          resultado.append("UNSAT\n\n");
+          resultado.append("El problema es insatisfacible.\n");
+          resultado.append("No existe solución para las restricciones dadas.\n");
+
+          etiquetaEstado.setText("UNSAT - No existe solución");
         }
-        result.append(String.format("\nExecution time: %.4f seconds\n", elapsedSeconds));
-        result.append(String.format("Variables: %d | Clauses: %d\n", finalNumVars, clauses.size()));
-        resultArea.setText(result.toString());
-        resultArea.setCaretPosition(0);
+
+        resultado.append(String.format("\nTiempo de ejecución: %.4f segundos\n", segundos));
+        resultado.append(String.format("Variables: %d | Cláusulas: %d\n", numVarsFinal, clausulas.size()));
+
+        areaResultado.setText(resultado.toString());
+        areaResultado.setCaretPosition(0);
       });
+
     } catch (Exception e) {
       SwingUtilities.invokeLater(() -> {
         JOptionPane.showMessageDialog(this,
-                "Solver error:\n" + e.getMessage(),
-                "Solver Error", JOptionPane.ERROR_MESSAGE);
-        resultArea.setText("Error: " + e.getMessage());
-        statusLabel.setText("Error occurred");
+                "Error en el solver:\n" + e.getMessage(),
+                "Error del solver", JOptionPane.ERROR_MESSAGE);
+        areaResultado.setText("Error: " + e.getMessage());
+        etiquetaEstado.setText("Ocurrió un error");
       });
     } finally {
       SwingUtilities.invokeLater(() -> {
-        progressBar.setIndeterminate(false);
-        progressBar.setVisible(false);
-        solveButton.setText("Run");
+        barraProgreso.setIndeterminate(false);
+        barraProgreso.setVisible(false);
+        botonResolver.setText("Ejecutar");
       });
     }
   }
 
-  private List<int[]> parseDimacsToIntList(String dimacs) {
-    List<int[]> clauses = new ArrayList<>();
-    for (String rawLine : dimacs.split("\\R")) {
-      String line = rawLine.trim();
-      if (line.isEmpty()) continue;
-      if (line.startsWith("c") || line.startsWith("//") || line.startsWith("p")) continue;
-      String[] tokens = line.split("\\s+");
-      List<Integer> literals = new ArrayList<>();
+  // Parsear formato DIMACS a lista de arreglos de enteros
+  private List<int[]> parsearDimacsAListaInt(String dimacs) {
+    List<int[]> clausulas = new ArrayList<>();
+
+    for (String lineaRaw : dimacs.split("\\R")) {
+      String linea = lineaRaw.trim();
+      if (linea.isEmpty()) continue;
+      if (linea.startsWith("c") || linea.startsWith("//") || linea.startsWith("p")) continue;
+
+      String[] tokens = linea.split("\\s+");
+      List<Integer> literales = new ArrayList<>();
+
       for (String token : tokens) {
         if ("0".equals(token)) break;
         try {
           int literal = Integer.parseInt(token);
           if (literal != 0) {
-            literals.add(literal);
+            literales.add(literal);
           }
         } catch (NumberFormatException ignored) {}
       }
-      if (!literals.isEmpty()) {
-        clauses.add(literals.stream().mapToInt(i -> i).toArray());
+
+      if (!literales.isEmpty()) {
+        int[] arregloClausula = literales.stream().mapToInt(i -> i).toArray();
+        clausulas.add(arregloClausula);
       }
     }
-    return clauses;
+
+    return clausulas;
   }
 
-  private boolean[] solveDPLL(List<int[]> clausesList, int numVars) {
-    List<int[]> clauses = new ArrayList<>(clausesList);
-    Boolean[] assignment = new Boolean[numVars + 1];
-    boolean satisfiable = dpllRecursive(clauses, assignment, numVars);
-    return satisfiable ? convertToPrimitiveBoolArray(assignment) : null;
+  // Implementación del solver DPLL
+  private boolean[] resolverDPLL(List<int[]> listaClausulas, int numVars) {
+    List<int[]> clausulas = new ArrayList<>(listaClausulas);
+    Boolean[] asignacion = new Boolean[numVars + 1];
+
+    boolean satisfacible = dpllRecursivo(clausulas, asignacion, numVars);
+    return satisfacible ? convertirABoolPrimitivo(asignacion) : null;
   }
 
-  private boolean[] convertToPrimitiveBoolArray(Boolean[] boxedArray) {
-    boolean[] primitiveArray = new boolean[boxedArray.length];
-    for (int i = 0; i < boxedArray.length; i++) {
-      primitiveArray[i] = boxedArray[i] != null && boxedArray[i];
+  private boolean[] convertirABoolPrimitivo(Boolean[] arregloBoxed) {
+    boolean[] arregloPrimitivo = new boolean[arregloBoxed.length];
+    for (int i = 0; i < arregloBoxed.length; i++) {
+      arregloPrimitivo[i] = arregloBoxed[i] != null && arregloBoxed[i];
     }
-    return primitiveArray;
+    return arregloPrimitivo;
   }
 
-  private boolean dpllRecursive(List<int[]> clauses, Boolean[] assignment, int numVars) {
-    if (cancelRequested.get()) return false;
-    List<int[]> simplifiedClauses = new ArrayList<>();
-    for (int[] clause : clauses) {
-      boolean clauseSatisfied = false;
-      List<Integer> newClause = new ArrayList<>();
-      for (int literal : clause) {
+  private boolean dpllRecursivo(List<int[]> clausulas, Boolean[] asignacion, int numVars) {
+    if (cancelarSolicitado.get()) return false;
+
+    List<int[]> clausulasSimplificadas = new ArrayList<>();
+
+    for (int[] clausula : clausulas) {
+      boolean clausulaSatisfecha = false;
+      List<Integer> nuevaClausula = new ArrayList<>();
+
+      for (int literal : clausula) {
         int variable = Math.abs(literal);
-        Boolean value = assignment[variable];
-        if (value == null) {
-          newClause.add(literal);
+        Boolean valor = asignacion[variable];
+
+        if (valor == null) {
+          nuevaClausula.add(literal);
         } else {
-          boolean literalValue = (literal > 0 && value) || (literal < 0 && !value);
-          if (literalValue) {
-            clauseSatisfied = true;
+          boolean valorLiteral = (literal > 0 && valor) || (literal < 0 && !valor);
+          if (valorLiteral) {
+            clausulaSatisfecha = true;
             break;
           }
         }
       }
-      if (clauseSatisfied) continue;
-      if (newClause.isEmpty()) return false;
-      simplifiedClauses.add(newClause.stream().mapToInt(i -> i).toArray());
+
+      if (clausulaSatisfecha) continue;
+
+      if (nuevaClausula.isEmpty()) return false;
+
+      clausulasSimplificadas.add(nuevaClausula.stream().mapToInt(i -> i).toArray());
     }
-    if (simplifiedClauses.isEmpty()) return true;
-    for (int[] clause : simplifiedClauses) {
-      if (clause.length == 1) {
-        int unitLiteral = clause[0];
-        int variable = Math.abs(unitLiteral);
-        boolean value = unitLiteral > 0;
-        Boolean currentValue = assignment[variable];
-        if (currentValue != null) {
-          if (currentValue != value) return false;
+
+    if (clausulasSimplificadas.isEmpty()) return true;
+
+    // Propagación de unidades
+    for (int[] clausula : clausulasSimplificadas) {
+      if (clausula.length == 1) {
+        int literalUnidad = clausula[0];
+        int variable = Math.abs(literalUnidad);
+        boolean valor = literalUnidad > 0;
+
+        Boolean valorActual = asignacion[variable];
+        if (valorActual != null) {
+          if (valorActual != valor) return false;
         } else {
-          assignment[variable] = value;
-          boolean result = dpllRecursive(simplifiedClauses, assignment, numVars);
-          if (result) return true;
-          assignment[variable] = null;
+          asignacion[variable] = valor;
+          boolean resultado = dpllRecursivo(clausulasSimplificadas, asignacion, numVars);
+          if (resultado) return true;
+          asignacion[variable] = null;
           return false;
         }
       }
     }
-    Map<Integer, Integer> literalPolarity = new HashMap<>();
-    for (int[] clause : simplifiedClauses) {
-      for (int literal : clause) {
+
+    // Eliminación de literales puros
+    Map<Integer, Integer> polaridadLiteral = new HashMap<>();
+
+    for (int[] clausula : clausulasSimplificadas) {
+      for (int literal : clausula) {
         int variable = Math.abs(literal);
-        int polarity = literal > 0 ? 1 : -1;
-        literalPolarity.putIfAbsent(variable, 0);
-        if (polarity > 0) {
-          literalPolarity.put(variable, literalPolarity.get(variable) | 1);
+        int polaridad = literal > 0 ? 1 : -1;
+
+        polaridadLiteral.putIfAbsent(variable, 0);
+        if (polaridad > 0) {
+          polaridadLiteral.put(variable, polaridadLiteral.get(variable) | 1);
         } else {
-          literalPolarity.put(variable, literalPolarity.get(variable) | 2);
+          polaridadLiteral.put(variable, polaridadLiteral.get(variable) | 2);
         }
       }
     }
-    for (Map.Entry<Integer, Integer> entry : literalPolarity.entrySet()) {
+
+    for (Map.Entry<Integer, Integer> entry : polaridadLiteral.entrySet()) {
       int variable = entry.getKey();
-      int polarity = entry.getValue();
-      if (assignment[variable] == null && (polarity == 1 || polarity == 2)) {
-        assignment[variable] = (polarity == 1);
-        boolean result = dpllRecursive(simplifiedClauses, assignment, numVars);
-        if (result) return true;
-        assignment[variable] = null;
+      int polaridad = entry.getValue();
+
+      if (asignacion[variable] == null && (polaridad == 1 || polaridad == 2)) {
+        asignacion[variable] = (polaridad == 1);
+        boolean resultado = dpllRecursivo(clausulasSimplificadas, asignacion, numVars);
+        if (resultado) return true;
+        asignacion[variable] = null;
         return false;
       }
     }
-    Map<Integer, Integer> variableFrequency = new HashMap<>();
-    for (int[] clause : simplifiedClauses) {
-      for (int literal : clause) {
+
+    // Heurística de frecuencia
+    Map<Integer, Integer> frecuenciaVariable = new HashMap<>();
+
+    for (int[] clausula : clausulasSimplificadas) {
+      for (int literal : clausula) {
         int variable = Math.abs(literal);
-        if (assignment[variable] == null) {
-          variableFrequency.put(variable, variableFrequency.getOrDefault(variable, 0) + 1);
+        if (asignacion[variable] == null) {
+          frecuenciaVariable.put(variable, frecuenciaVariable.getOrDefault(variable, 0) + 1);
         }
       }
     }
-    if (variableFrequency.isEmpty()) return true;
-    int chosenVariable = Collections.max(variableFrequency.entrySet(),
+
+    if (frecuenciaVariable.isEmpty()) return true;
+
+    int variableElegida = Collections.max(frecuenciaVariable.entrySet(),
             Map.Entry.comparingByValue()).getKey();
-    for (boolean value : new boolean[]{true, false}) {
-      assignment[chosenVariable] = value;
-      boolean result = dpllRecursive(simplifiedClauses, assignment, numVars);
-      if (result) return true;
-      assignment[chosenVariable] = null;
-      if (cancelRequested.get()) return false;
+
+    for (boolean valor : new boolean[]{true, false}) {
+      asignacion[variableElegida] = valor;
+      boolean resultado = dpllRecursivo(clausulasSimplificadas, asignacion, numVars);
+      if (resultado) return true;
+      asignacion[variableElegida] = null;
+
+      if (cancelarSolicitado.get()) return false;
     }
+
     return false;
   }
 
-  static class LineNumberView extends JComponent implements DocumentListener {
-    private final JTextArea textArea;
-    private FontMetrics fontMetrics;
-    private final int MARGIN = 8;
-    private Color backgroundColor = Color.decode("#2b2b2b");
-    private Color foregroundColor = Color.decode("#858588");
+  // Componente de números de línea para el editor
+  static class VistaNumerosLinea extends JComponent implements DocumentListener {
+    private final JTextArea areaTexto;
+    private FontMetrics metricaFuente;
+    private final int MARGEN = 8;
+    private Color colorFondo = Color.decode("#2b2b2b");
+    private Color colorTexto = Color.decode("#858585");
 
-    public LineNumberView(JTextArea textArea) {
-      this.textArea = textArea;
-      this.textArea.getDocument().addDocumentListener(this);
-      this.textArea.addCaretListener(e -> repaint());
-      setFont(new Font(CODE_FONT_NAME, Font.PLAIN, CODE_FONT_SIZE - 1));
-      this.fontMetrics = getFontMetrics(getFont());
+    public VistaNumerosLinea(JTextArea areaTexto) {
+      this.areaTexto = areaTexto;
+      this.areaTexto.getDocument().addDocumentListener(this);
+      this.areaTexto.addCaretListener(e -> repaint());
+
+      setFont(new Font(FUENTE_CODIGO, Font.PLAIN, TAM_CODIGO - 1));
+      this.metricaFuente = getFontMetrics(getFont());
       setPreferredSize(new Dimension(50, Integer.MAX_VALUE));
       setOpaque(true);
     }
 
-    public void setColors(Color bg, Color fg) {
-      this.backgroundColor = bg;
-      this.foregroundColor = fg;
+    public void setColores(Color fondo, Color texto) {
+      this.colorFondo = fondo;
+      this.colorTexto = texto;
       repaint();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
       super.paintComponent(g);
-      Rectangle clipBounds = g.getClipBounds();
-      g.setColor(backgroundColor);
-      g.fillRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height);
-      g.setColor(foregroundColor);
-      this.fontMetrics = getFontMetrics(getFont());
+
+      Rectangle clip = g.getClipBounds();
+      g.setColor(colorFondo);
+      g.fillRect(clip.x, clip.y, clip.width, clip.height);
+
+      g.setColor(colorTexto);
+      this.metricaFuente = getFontMetrics(getFont());
+
       try {
-        int startOffset = textArea.viewToModel2D(new Point(0, clipBounds.y));
-        int endOffset = textArea.viewToModel2D(new Point(0, clipBounds.y + clipBounds.height));
-        int startLine = textArea.getLineOfOffset(startOffset);
-        int endLine = textArea.getLineOfOffset(endOffset);
-        for (int line = startLine; line <= endLine; line++) {
-          int lineStartOffset = textArea.getLineStartOffset(line);
-          Rectangle lineRect = textArea.modelToView2D(lineStartOffset).getBounds();
-          String lineNumber = String.valueOf(line + 1);
-          int x = getWidth() - MARGIN - fontMetrics.stringWidth(lineNumber);
-          int y = lineRect.y + fontMetrics.getAscent();
-          g.drawString(lineNumber, x, y);
+        int inicioOffset = areaTexto.viewToModel2D(new Point(0, clip.y));
+        int finOffset = areaTexto.viewToModel2D(new Point(0, clip.y + clip.height));
+
+        int inicioLinea = areaTexto.getLineOfOffset(inicioOffset);
+        int finLinea = areaTexto.getLineOfOffset(finOffset);
+
+        for (int linea = inicioLinea; linea <= finLinea; linea++) {
+          int offsetInicioLinea = areaTexto.getLineStartOffset(linea);
+          Rectangle rectLinea = areaTexto.modelToView2D(offsetInicioLinea).getBounds();
+
+          String numLinea = String.valueOf(linea + 1);
+          int x = getWidth() - MARGEN - metricaFuente.stringWidth(numLinea);
+          int y = rectLinea.y + metricaFuente.getAscent();
+
+          g.drawString(numLinea, x, y);
         }
+
       } catch (Exception ignored) {}
     }
 
     @Override
     public void insertUpdate(DocumentEvent e) { repaint(); }
+
     @Override
     public void removeUpdate(DocumentEvent e) { repaint(); }
+
     @Override
     public void changedUpdate(DocumentEvent e) { repaint(); }
   }
 
+  // Método principal
   public static void main(String[] args) {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    } catch (Exception ignored) {}
-    SwingUtilities.invokeLater(() -> new MinntSATSolver().setVisible(true));
+    } catch (ClassNotFoundException | InstantiationException |
+             IllegalAccessException | UnsupportedLookAndFeelException ignored) {}
+
+    SwingUtilities.invokeLater(() -> {
+      new MinntSATSolver().setVisible(true);
+    });
   }
 }
