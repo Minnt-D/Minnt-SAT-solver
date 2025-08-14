@@ -370,8 +370,8 @@ public class MinntSATSolver extends JFrame {
     // Bordes redondeados y sombra para MINNT
     if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
       btn.setBorder(BorderFactory.createCompoundBorder(
-              new javax.swing.border.LineBorder(new Color(255,122,0,80), 2, true),
-              BorderFactory.createEmptyBorder(2, 8, 2, 8)
+        new javax.swing.border.LineBorder(new Color(255,122,0,80), 2, true),
+        BorderFactory.createEmptyBorder(2, 8, 2, 8)
       ));
       btn.setBackground(temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_ACENTO : MINNT_CLARO_ACENTO);
       btn.setForeground(temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_TEXTO : MINNT_CLARO_TEXTO);
@@ -449,74 +449,74 @@ public class MinntSATSolver extends JFrame {
     Color fondo, fondoPanel, fondoBarra, texto, acento, fondoLinea, textoLinea, borde, fondoBoton, hoverBoton;
 
     switch (t) {
-      case OSCURO -> {
-        fondo = VS_OSCURO_FONDO; fondoPanel = VS_OSCURO_PANEL; fondoBarra = VS_OSCURO_BARRA;
-        texto = VS_OSCURO_TEXTO; acento = VS_OSCURO_ACENTO; fondoLinea = VS_OSCURO_LINEA_FONDO;
-        textoLinea = VS_OSCURO_LINEA_TEXTO; borde = VS_OSCURO_BORDE;
-        fondoBoton = VS_OSCURO_BOTON; hoverBoton = VS_OSCURO_BOTON_HOVER;
-      }
-      case CLARO -> {
-        fondo = VS_CLARO_FONDO; fondoPanel = VS_CLARO_PANEL; fondoBarra = VS_CLARO_BARRA;
-        texto = VS_CLARO_TEXTO; acento = VS_CLARO_ACENTO; fondoLinea = VS_CLARO_LINEA_FONDO;
-        textoLinea = VS_CLARO_LINEA_TEXTO; borde = VS_CLARO_BORDE;
-        fondoBoton = VS_CLARO_BOTON; hoverBoton = VS_CLARO_BOTON_HOVER;
-      }
-      case MINNT_OSCURO -> {
-        fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
-        texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
-        textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
-        fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
-      }
-      case MINNT_CLARO -> {
-        fondo = MINNT_CLARO_FONDO; fondoPanel = MINNT_CLARO_PANEL; fondoBarra = MINNT_CLARO_PANEL;
-        texto = MINNT_CLARO_TEXTO; acento = MINNT_CLARO_ACENTO; fondoLinea = MINNT_CLARO_LINEA_FONDO;
-        textoLinea = MINNT_CLARO_LINEA_TEXTO; borde = MINNT_CLARO_ACENTO;
-        fondoBoton = MINNT_CLARO_ACENTO; hoverBoton = MINNT_CLARO_ACENTO.darker();
-      }
-      default -> {
-        fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
-        texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
-        textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
-        fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
-      }
+        case OSCURO -> {
+            fondo = VS_OSCURO_FONDO; fondoPanel = VS_OSCURO_PANEL; fondoBarra = VS_OSCURO_BARRA;
+            texto = VS_OSCURO_TEXTO; acento = VS_OSCURO_ACENTO; fondoLinea = VS_OSCURO_LINEA_FONDO;
+            textoLinea = VS_OSCURO_LINEA_TEXTO; borde = VS_OSCURO_BORDE;
+            fondoBoton = VS_OSCURO_BOTON; hoverBoton = VS_OSCURO_BOTON_HOVER;
+        }
+        case CLARO -> {
+            fondo = VS_CLARO_FONDO; fondoPanel = VS_CLARO_PANEL; fondoBarra = VS_CLARO_BARRA;
+            texto = VS_CLARO_TEXTO; acento = VS_CLARO_ACENTO; fondoLinea = VS_CLARO_LINEA_FONDO;
+            textoLinea = VS_CLARO_LINEA_TEXTO; borde = VS_CLARO_BORDE;
+            fondoBoton = VS_CLARO_BOTON; hoverBoton = VS_CLARO_BOTON_HOVER;
+        }
+        case MINNT_OSCURO -> {
+            fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
+            texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
+            textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
+            fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
+        }
+        case MINNT_CLARO -> {
+            fondo = MINNT_CLARO_FONDO; fondoPanel = MINNT_CLARO_PANEL; fondoBarra = MINNT_CLARO_PANEL;
+            texto = MINNT_CLARO_TEXTO; acento = MINNT_CLARO_ACENTO; fondoLinea = MINNT_CLARO_LINEA_FONDO;
+            textoLinea = MINNT_CLARO_LINEA_TEXTO; borde = MINNT_CLARO_ACENTO;
+            fondoBoton = MINNT_CLARO_ACENTO; hoverBoton = MINNT_CLARO_ACENTO.darker();
+        }
+        default -> {
+            fondo = MINNT_OSCURO_FONDO; fondoPanel = MINNT_OSCURO_PANEL; fondoBarra = MINNT_OSCURO_PANEL;
+            texto = MINNT_OSCURO_TEXTO; acento = MINNT_OSCURO_ACENTO; fondoLinea = MINNT_OSCURO_LINEA_FONDO;
+            textoLinea = MINNT_OSCURO_LINEA_TEXTO; borde = MINNT_OSCURO_ACENTO;
+            fondoBoton = MINNT_OSCURO_ACENTO; hoverBoton = MINNT_OSCURO_ACENTO.brighter();
+        }
     }
 
     // Aplica colores recursivamente
     aplicarColoresRecursivo(getContentPane(), fondo, fondoPanel, fondoBarra, texto, acento,
-            fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
+        fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
 
     // Paneles principales y JSplitPane
     for (Component comp : getContentPane().getComponents()) {
-      if (comp instanceof JPanel p) {
-        p.setBackground(fondoPanel);
-        if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
-          p.setBorder(BorderFactory.createCompoundBorder(
-                  new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
-                  BorderFactory.createEmptyBorder(8, 8, 8, 8)
-          ));
-        } else {
-          p.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        if (comp instanceof JPanel p) {
+            p.setBackground(fondoPanel);
+            if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
+                p.setBorder(BorderFactory.createCompoundBorder(
+                    new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
+                    BorderFactory.createEmptyBorder(8, 8, 8, 8)
+                ));
+            } else {
+                p.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            }
         }
-      }
-      if (comp instanceof JSplitPane sp) {
-        sp.setBackground(fondoPanel);
-        sp.setDividerSize(6);
-        sp.setBorder(BorderFactory.createLineBorder(borde, 2, true));
-      }
+        if (comp instanceof JSplitPane sp) {
+            sp.setBackground(fondoPanel);
+            sp.setDividerSize(6);
+            sp.setBorder(BorderFactory.createLineBorder(borde, 2, true));
+        }
     }
 
     // Barra de estado
     Component barraEstadoComp = buscarComponentePorNombre(getContentPane(), "barraEstado");
     if (barraEstadoComp instanceof JPanel barraEstadoPanel) {
-      barraEstadoPanel.setBackground(acento);
-      barraEstadoPanel.setBorder(BorderFactory.createMatteBorder(0,0,0,0,acento));
-      etiquetaEstado.setForeground(Color.WHITE);
-      if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
-        barraEstadoPanel.setBorder(BorderFactory.createCompoundBorder(
+        barraEstadoPanel.setBackground(acento);
+        barraEstadoPanel.setBorder(BorderFactory.createMatteBorder(0,0,0,0,acento));
+        etiquetaEstado.setForeground(Color.WHITE);
+        if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
+            barraEstadoPanel.setBorder(BorderFactory.createCompoundBorder(
                 new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
                 BorderFactory.createEmptyBorder(2, 12, 2, 12)
-        ));
-      }
+            ));
+        }
     }
 
     // Modales con tema
@@ -527,7 +527,7 @@ public class MinntSATSolver extends JFrame {
     // Números de línea
     Component numerosLinea = obtenerVistaNumerosLinea();
     if (numerosLinea instanceof VistaNumerosLinea) {
-      ((VistaNumerosLinea) numerosLinea).setColores(fondoLinea, textoLinea);
+        ((VistaNumerosLinea) numerosLinea).setColores(fondoLinea, textoLinea);
     }
 
     SwingUtilities.updateComponentTreeUI(this);
@@ -536,74 +536,74 @@ public class MinntSATSolver extends JFrame {
 
   // Aplica colores recursivamente a todos los componentes
   private void aplicarColoresRecursivo(Container contenedor, Color fondo, Color fondoPanel,
-                                       Color fondoBarra, Color texto, Color acento, Color fondoLinea, Color textoLinea, Color borde,
-                                       Color fondoBoton, Color hoverBoton) {
+    Color fondoBarra, Color texto, Color acento, Color fondoLinea, Color textoLinea, Color borde,
+    Color fondoBoton, Color hoverBoton) {
     contenedor.setBackground(fondo);
     contenedor.setForeground(texto);
 
     for (Component comp : contenedor.getComponents()) {
-      if (comp instanceof JPanel p) {
-        p.setBackground(fondoPanel);
-        p.setForeground(texto);
-        if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
-          p.setBorder(BorderFactory.createCompoundBorder(
-                  new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
-                  BorderFactory.createEmptyBorder(8, 8, 8, 8)
-          ));
-        } else {
-          p.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        }
-      } else if (comp instanceof JButton btn) {
-        btn.setBackground(fondoBoton);
-        btn.setForeground(texto);
-        btn.setBorder(BorderFactory.createLineBorder(borde, temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO ? 2 : 1, true));
-        btn.setFocusPainted(false);
-        btn.setOpaque(true);
-        btn.setContentAreaFilled(true);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        for (MouseListener ml : btn.getMouseListeners()) {
-          btn.removeMouseListener(ml);
-        }
-        btn.addMouseListener(new java.awt.event.MouseAdapter() {
-          public void mouseEntered(java.awt.event.MouseEvent evt) {
-            btn.setBackground(hoverBoton);
-          }
-          public void mouseExited(java.awt.event.MouseEvent evt) {
-            btn.setBackground(fondoBoton);
-          }
-        });
-        if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
-          btn.setBorder(BorderFactory.createCompoundBorder(
-                  new javax.swing.border.LineBorder(new Color(255,122,0,80), 2, true),
-                  BorderFactory.createEmptyBorder(2, 8, 2, 8)
-          ));
-          btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
-            @Override
-            public void paint(Graphics g, JComponent c) {
-              Graphics2D g2 = (Graphics2D) g.create();
-              g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-              g2.setColor(btn.getBackground());
-              g2.fillRoundRect(0, 0, btn.getWidth(), btn.getHeight(), 18, 18);
-              g2.setColor(new Color(0,0,0,30));
-              g2.fillRoundRect(3, 3, btn.getWidth()-6, btn.getHeight()-6, 14, 14);
-              super.paint(g2, c);
-              g2.dispose();
+        if (comp instanceof JPanel p) {
+            p.setBackground(fondoPanel);
+            p.setForeground(texto);
+            if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+                p.setBorder(BorderFactory.createCompoundBorder(
+                    new javax.swing.border.LineBorder(new Color(255,122,0,60), 2, true),
+                    BorderFactory.createEmptyBorder(8, 8, 8, 8)
+                ));
+            } else {
+                p.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             }
-          });
-        } else {
-          btn.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        } else if (comp instanceof JButton btn) {
+            btn.setBackground(fondoBoton);
+            btn.setForeground(texto);
+            btn.setBorder(BorderFactory.createLineBorder(borde, temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO ? 2 : 1, true));
+            btn.setFocusPainted(false);
+            btn.setOpaque(true);
+            btn.setContentAreaFilled(true);
+            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            for (MouseListener ml : btn.getMouseListeners()) {
+                btn.removeMouseListener(ml);
+            }
+            btn.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    btn.setBackground(hoverBoton);
+                }
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    btn.setBackground(fondoBoton);
+                }
+            });
+            if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+                btn.setBorder(BorderFactory.createCompoundBorder(
+                    new javax.swing.border.LineBorder(new Color(255,122,0,80), 2, true),
+                    BorderFactory.createEmptyBorder(2, 8, 2, 8)
+                ));
+                btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
+                    @Override
+                    public void paint(Graphics g, JComponent c) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(btn.getBackground());
+                        g2.fillRoundRect(0, 0, btn.getWidth(), btn.getHeight(), 18, 18);
+                        g2.setColor(new Color(0,0,0,30));
+                        g2.fillRoundRect(3, 3, btn.getWidth()-6, btn.getHeight()-6, 14, 14);
+                        super.paint(g2, c);
+                        g2.dispose();
+                    }
+                });
+            } else {
+                btn.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+            }
+        } else if (comp instanceof JLabel lbl) {
+            lbl.setForeground(texto);
+        } else if (comp instanceof JScrollPane sp) {
+            sp.setBackground(fondoPanel);
+            sp.getViewport().setBackground(fondoPanel);
+            sp.setBorder(BorderFactory.createLineBorder(borde, 1));
         }
-      } else if (comp instanceof JLabel lbl) {
-        lbl.setForeground(texto);
-      } else if (comp instanceof JScrollPane sp) {
-        sp.setBackground(fondoPanel);
-        sp.getViewport().setBackground(fondoPanel);
-        sp.setBorder(BorderFactory.createLineBorder(borde, 1));
-      }
-      if (comp instanceof Container) {
-        aplicarColoresRecursivo((Container) comp, fondo, fondoPanel, fondoBarra, texto, acento,
+        if (comp instanceof Container) {
+            aplicarColoresRecursivo((Container) comp, fondo, fondoPanel, fondoBarra, texto, acento,
                 fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
-      }
+        }
     }
   }
 
