@@ -150,7 +150,6 @@ public class MinntSATSolver extends JFrame {
     resolverItem.addActionListener(e -> iniciarResolucion());
     menuEjecutar.add(resolverItem);
 
-    // Menú Ayuda
     JMenu menuAyuda = new JMenu("Ayuda");
     menuAyuda.setFont(fuenteUI);
     JMenuItem acercaDe = new JMenuItem("Acerca de");
@@ -170,27 +169,22 @@ public class MinntSATSolver extends JFrame {
 
     setJMenuBar(barraMenu);
 
-    // Panel principal con diseño VS Code
     JPanel panelPrincipal = new JPanel(new BorderLayout());
     panelPrincipal.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-    // Barra de actividad (lateral izquierdo - simplificado)
     JPanel barraActividad = new JPanel();
     barraActividad.setLayout(new BoxLayout(barraActividad, BoxLayout.Y_AXIS));
     barraActividad.setPreferredSize(new Dimension(48, 0));
     barraActividad.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
 
-    // Panel dividido para editor y resultado
     JSplitPane panelDividido = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     panelDividido.setResizeWeight(0.6);
     panelDividido.setBorder(null);
     panelDividido.setDividerSize(4);
 
-    // Panel izquierdo - Editor
     JPanel panelIzquierdo = new JPanel(new BorderLayout());
     panelIzquierdo.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 2));
 
-    // Barra de pestañas del editor
     JPanel barraPestañasEditor = new JPanel(new BorderLayout());
     barraPestañasEditor.setPreferredSize(new Dimension(0, 35));
     barraPestañasEditor.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
@@ -201,7 +195,6 @@ public class MinntSATSolver extends JFrame {
     pestañaEditor.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
     barraPestañasEditor.add(pestañaEditor, BorderLayout.WEST);
 
-    // Área de editor
     editor = new JTextArea();
     editor.setFont(fuenteCodigo);
     editor.setTabSize(2);
@@ -216,7 +209,6 @@ public class MinntSATSolver extends JFrame {
     panelIzquierdo.add(barraPestañasEditor, BorderLayout.NORTH);
     panelIzquierdo.add(scrollEditor, BorderLayout.CENTER);
 
-    // Barra de herramientas del editor
     JPanel barraHerramientasEditor = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
     barraHerramientasEditor.setBorder(BorderFactory.createEmptyBorder(0, 8, 4, 8));
 
@@ -238,11 +230,9 @@ public class MinntSATSolver extends JFrame {
     barraHerramientasEditor.add(limpiarBtn);
     panelIzquierdo.add(barraHerramientasEditor, BorderLayout.SOUTH);
 
-    // Panel derecho - Salida/Resultados
     JPanel panelDerecho = new JPanel(new BorderLayout());
     panelDerecho.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 
-    // Barra de pestañas de salida
     JPanel barraPestañasSalida = new JPanel(new BorderLayout());
     barraPestañasSalida.setPreferredSize(new Dimension(0, 35));
     barraPestañasSalida.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
@@ -251,7 +241,6 @@ public class MinntSATSolver extends JFrame {
     pestañaSalida.setFont(new Font(FUENTE_UI, Font.PLAIN, 11));
     pestañaSalida.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-    // Barra de herramientas de salida
     JPanel barraHerramientasSalida = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
     JButton copiarBtn = crearBotonIcono("Copiar", "📋");
     copiarBtn.addActionListener(e -> copiarResultadoAlPortapapeles());
@@ -264,7 +253,6 @@ public class MinntSATSolver extends JFrame {
     barraPestañasSalida.add(pestañaSalida, BorderLayout.WEST);
     barraPestañasSalida.add(barraHerramientasSalida, BorderLayout.EAST);
 
-    // Área de resultados
     areaResultado = new JTextArea();
     areaResultado.setFont(fuenteCodigo);
     areaResultado.setEditable(false);
@@ -278,7 +266,6 @@ public class MinntSATSolver extends JFrame {
     panelDerecho.add(barraPestañasSalida, BorderLayout.NORTH);
     panelDerecho.add(scrollResultado, BorderLayout.CENTER);
 
-    // Barra de estado (estilo VS Code)
     JPanel barraEstado = new JPanel(new BorderLayout());
     barraEstado.setName("barraEstado");
     barraEstado.setPreferredSize(new Dimension(0, 22));
@@ -287,7 +274,6 @@ public class MinntSATSolver extends JFrame {
     etiquetaEstado = new JLabel("Listo");
     etiquetaEstado.setFont(new Font(FUENTE_UI, Font.PLAIN, 11));
 
-    // Barra de progreso en barra de estado
     barraProgreso = new JProgressBar();
     barraProgreso.setPreferredSize(new Dimension(120, 14));
     barraProgreso.setIndeterminate(false);
@@ -301,7 +287,6 @@ public class MinntSATSolver extends JFrame {
     barraEstado.add(etiquetaEstado, BorderLayout.WEST);
     barraEstado.add(estadoDerecha, BorderLayout.EAST);
 
-    // Ensamblar diseño principal
     panelDividido.setLeftComponent(panelIzquierdo);
     panelDividido.setRightComponent(panelDerecho);
 
@@ -311,13 +296,10 @@ public class MinntSATSolver extends JFrame {
 
     add(panelPrincipal);
 
-    // Ejemplo por defecto en el editor
     editor.setText("// Ejemplo de problema SAT\n// Los comentarios empiezan con // o c\np cnf 3 2\n1 -3 0\n2 3 -1 0\n");
 
-    // Atajos de teclado
     configurarAtajosTeclado();
 
-    // Tamaño y posición de ventana
     setSize(1400, 800);
     setLocationRelativeTo(null);
   }
@@ -342,7 +324,6 @@ public class MinntSATSolver extends JFrame {
     });
   }
 
-  // Crea botones con estilo neumórfico para MINNT
   private JButton crearBotonVSCode(String texto, int tecla) {
     JButton btn = new JButton(texto);
     btn.setFont(new Font(FUENTE_UI, Font.PLAIN, 11));
@@ -358,7 +339,6 @@ public class MinntSATSolver extends JFrame {
     return btn;
   }
 
-  // Crea botones de icono con efectos neumórficos
   private JButton crearBotonIcono(String tooltip, String tipo) {
     JButton btn = new JButton();
     btn.setToolTipText(tooltip);
@@ -374,7 +354,6 @@ public class MinntSATSolver extends JFrame {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Fondo neumórfico y sombra
         if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
           Color fondo = temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_PANEL : MINNT_CLARO_PANEL;
           g2.setColor(new Color(0,0,0,32));
@@ -383,7 +362,6 @@ public class MinntSATSolver extends JFrame {
           g2.fillRoundRect(x+1, y+1, 24, 20, 10, 10);
         }
 
-        // Icono dibujado
         if (tipo.equals("Copiar")) {
           g2.setColor(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? Color.WHITE : Color.BLACK);
           g2.drawRect(x+8, y+8, 8, 8);
@@ -402,7 +380,6 @@ public class MinntSATSolver extends JFrame {
     return btn;
   }
 
-  // Método para crear un icono coloreado simple (círculo)
   private Icon crearIconoColoreado(int ancho, int alto, Color color) {
     return new Icon() {
       @Override
@@ -422,7 +399,6 @@ public class MinntSATSolver extends JFrame {
     };
   }
 
-  // Aplica tema con efectos neumórficos completos
   private void aplicarTema(Tema t) {
     Color fondo, fondoPanel, fondoBarra, texto, acento, fondoLinea, textoLinea, borde, fondoBoton, hoverBoton;
 
@@ -459,11 +435,9 @@ public class MinntSATSolver extends JFrame {
       }
     }
 
-    // Aplica colores recursivamente con efectos especiales
     aplicarColoresRecursivo(getContentPane(), fondo, fondoPanel, fondoBarra, texto, acento,
             fondoLinea, textoLinea, borde, fondoBoton, hoverBoton);
 
-    // Barra de menú con estilo apropiado
     JMenuBar barraMenu = getJMenuBar();
     if (barraMenu != null) {
       barraMenu.setBackground(fondoBarra);
@@ -476,10 +450,8 @@ public class MinntSATSolver extends JFrame {
       aplicarColoresMenu(barraMenu, fondoBarra, texto, acento);
     }
 
-    // Paneles principales con efectos neumórficos
     aplicarEfectosEspeciales(getContentPane(), t, fondo, fondoPanel, borde, acento);
 
-    // Barra de estado especial
     Component barraEstadoComp = buscarComponentePorNombre(getContentPane(), "barraEstado");
     if (barraEstadoComp instanceof JPanel barraEstadoPanel) {
       if (t == Tema.MINNT_OSCURO || t == Tema.MINNT_CLARO) {
@@ -493,20 +465,17 @@ public class MinntSATSolver extends JFrame {
       }
     }
 
-    // Números de línea
     Component numerosLinea = obtenerVistaNumerosLinea();
     if (numerosLinea instanceof VistaNumerosLinea) {
       ((VistaNumerosLinea) numerosLinea).setColores(fondoLinea, textoLinea);
     }
 
-    // Configurar UIManager para diálogos
     configurarUIManagerParaTema(t, fondoPanel, texto, acento, fondo);
 
     SwingUtilities.updateComponentTreeUI(this);
     repaint();
   }
 
-  // Crea bordes neumórficos para temas MINNT
   private javax.swing.border.Border crearBordeNeumorphico(Color fondo, boolean elevado) {
     return new javax.swing.border.Border() {
       @Override
@@ -518,11 +487,10 @@ public class MinntSATSolver extends JFrame {
         Color luz = new Color(255, 255, 255, 20);
 
         if (elevado) {
-          // Sombra exterior (abajo-derecha)
+ 
           g2.setColor(sombra);
           g2.drawRoundRect(x+2, y+2, width-4, height-4, 12, 12);
 
-          // Luz interior (arriba-izquierda)
           g2.setColor(luz);
           g2.drawRoundRect(x, y, width-2, height-2, 12, 12);
         } else {
@@ -546,7 +514,6 @@ public class MinntSATSolver extends JFrame {
     };
   }
 
-  // Aplica efectos especiales según el tema
   private void aplicarEfectosEspeciales(Container contenedor, Tema tema, Color fondo, Color fondoPanel, Color borde, Color acento) {
     for (Component comp : contenedor.getComponents()) {
       if (comp instanceof JPanel panel) {
@@ -581,7 +548,6 @@ public class MinntSATSolver extends JFrame {
     }
   }
 
-  // Aplica colores recursivamente con efectos neumórficos para botones
   private void aplicarColoresRecursivo(Container contenedor, Color fondo, Color fondoPanel,
                                        Color fondoBarra, Color texto, Color acento, Color fondoLinea, Color textoLinea, Color borde,
                                        Color fondoBoton, Color hoverBoton) {
@@ -611,17 +577,15 @@ public class MinntSATSolver extends JFrame {
     }
   }
 
-  // Configura botones con efectos neumórficos
   private void configurarBotonConTema(JButton btn, Color fondoBoton, Color hoverBoton, Color texto, Color borde) {
     btn.setBackground(fondoBoton);
     btn.setForeground(texto);
     btn.setFocusPainted(false);
     btn.setOpaque(true);
-    btn.setContentAreaFilled(false); // Para permitir el gradiente y sombra personalizados
+    btn.setContentAreaFilled(false);
     btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    btn.setFont(new Font(FUENTE_UI, Font.BOLD, 13)); // Fuente más moderna y legible
+    btn.setFont(new Font(FUENTE_UI, Font.BOLD, 13));
 
-    // Remover listeners existentes
     for (MouseListener ml : btn.getMouseListeners()) {
       btn.removeMouseListener(ml);
     }
@@ -647,7 +611,6 @@ public class MinntSATSolver extends JFrame {
       }
     });
 
-    // Apariencia personalizada según el tema
     btn.setBorder(BorderFactory.createEmptyBorder(6, 18, 6, 18));
     btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
       @Override
@@ -659,13 +622,11 @@ public class MinntSATSolver extends JFrame {
         int w = btn.getWidth();
         int h = btn.getHeight();
 
-        // Sombra exterior para MINNT
         if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
           g2.setColor(new Color(0,0,0,32));
           g2.fillRoundRect(4, 4, w-8, h-8, arc, arc);
         }
 
-        // Gradiente moderno para fondo
         GradientPaint gp;
         if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.OSCURO) {
           gp = new GradientPaint(0, 0, fondoBoton.brighter(), 0, h, fondoBoton.darker());
@@ -675,12 +636,10 @@ public class MinntSATSolver extends JFrame {
         g2.setPaint(gp);
         g2.fillRoundRect(0, 0, w, h, arc, arc);
 
-        // Borde moderno
         g2.setColor(borde);
         g2.setStroke(new BasicStroke(2));
         g2.drawRoundRect(0, 0, w-1, h-1, arc, arc);
 
-        // Texto centrado y con sombra sutil
         FontMetrics fm = btn.getFontMetrics(btn.getFont());
         String text = btn.getText();
         int tw = fm.stringWidth(text);
@@ -759,7 +718,6 @@ public class MinntSATSolver extends JFrame {
     return null;
   }
 
-  // Diálogos mejorados con tema aplicado
   private void mostrarAcercaDe() {
     String acerca = """
         🔥 Minnt SAT Solver - Edición Java
@@ -889,7 +847,6 @@ public class MinntSATSolver extends JFrame {
     mostrarDialogoTematizado("Manual de usuario completo", manual, 700, 600);
   }
 
-  // Método unificado para mostrar diálogos tematizados
   private void mostrarDialogoTematizado(String titulo, String contenido, int ancho, int alto) {
     Color fondo, texto, acento;
 
@@ -903,13 +860,11 @@ public class MinntSATSolver extends JFrame {
       acento = temaActual == Tema.CLARO ? VS_CLARO_ACENTO : MINNT_CLARO_ACENTO;
     }
 
-    // Crear diálogo personalizado
     JDialog dialogo = new JDialog(this, titulo, true);
     dialogo.setSize(ancho, alto);
     dialogo.setLocationRelativeTo(this);
     dialogo.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-    // Panel principal con tema
     JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
     panelPrincipal.setBackground(fondo);
     if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
@@ -918,7 +873,6 @@ public class MinntSATSolver extends JFrame {
       panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     }
 
-    // Área de texto con scroll
     JTextArea areaTexto = new JTextArea(contenido);
     areaTexto.setEditable(false);
     areaTexto.setFont(new Font(FUENTE_UI, Font.PLAIN, 12));
@@ -943,7 +897,6 @@ public class MinntSATSolver extends JFrame {
       scroll.setBorder(BorderFactory.createLineBorder(acento, 1));
     }
 
-    // Panel de botones
     JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
     panelBotones.setBackground(fondo);
 
@@ -953,7 +906,6 @@ public class MinntSATSolver extends JFrame {
 
     panelBotones.add(botonCerrar);
 
-    // Ensamblar diálogo
     panelPrincipal.add(scroll, BorderLayout.CENTER);
     panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
 
@@ -973,7 +925,6 @@ public class MinntSATSolver extends JFrame {
     System.exit(0);
   }
 
-  // Operaciones de archivo
   private void cargarCNFDesdeArchivo() {
     JFileChooser selectorArchivo = new JFileChooser();
     selectorArchivo.setFileFilter(new javax.swing.filechooser.FileFilter() {
@@ -1032,7 +983,6 @@ public class MinntSATSolver extends JFrame {
     return new int[]{-1, -1};
   }
 
-  // Copiar resultado al portapapeles
   private void copiarResultadoAlPortapapeles() {
     String texto = areaResultado.getText();
     if (texto == null || texto.trim().isEmpty()) {
@@ -1050,7 +1000,6 @@ public class MinntSATSolver extends JFrame {
     temporizador.start();
   }
 
-  // Exportar resultado a carpeta Descargas
   private void exportarResultadoADescargas() {
     String texto = areaResultado.getText();
     if (texto == null || texto.trim().isEmpty()) {
@@ -1083,7 +1032,6 @@ public class MinntSATSolver extends JFrame {
     }
   }
 
-  // Ejecución del solver
   private void iniciarResolucion() {
     if ("Cancelar".equals(botonResolver.getText())) {
       cancelarSolicitado.set(true);
@@ -1099,7 +1047,6 @@ public class MinntSATSolver extends JFrame {
       return;
     }
 
-    // Actualizar interfaz para estado de resolución
     botonResolver.setText("Cancelar");
     barraProgreso.setIndeterminate(true);
     barraProgreso.setVisible(true);
@@ -1107,7 +1054,6 @@ public class MinntSATSolver extends JFrame {
     areaResultado.setText("Ejecutando solver SAT...\n");
     cancelarSolicitado.set(false);
 
-    // Ejecutar solver en hilo de fondo
     new Thread(this::ejecutarTareaSolver, "SAT-Solver-Thread").start();
   }
 
@@ -1116,7 +1062,6 @@ public class MinntSATSolver extends JFrame {
       String texto = editor.getText();
       long inicio = System.nanoTime();
 
-      // Parsear cabecera
       String lineaCabecera = null;
       for (String linea : texto.split("\\R")) {
         String recortada = linea.trim();
@@ -1158,7 +1103,6 @@ public class MinntSATSolver extends JFrame {
         return;
       }
 
-      // Parsear cláusulas
       List<int[]> clausulas = parsearDimacsAListaInt(texto);
       if (clausulas.isEmpty()) {
         SwingUtilities.invokeLater(() -> {
@@ -1169,12 +1113,10 @@ public class MinntSATSolver extends JFrame {
         return;
       }
 
-      // Actualizar progreso
       SwingUtilities.invokeLater(() -> {
         etiquetaEstado.setText("Resolviendo con algoritmo DPLL...");
       });
 
-      // Resolver usando DPLL
       boolean[] solucion = resolverDPLL(clausulas, numVars);
       double segundos = (System.nanoTime() - inicio) / 1e9;
 
@@ -1188,7 +1130,6 @@ public class MinntSATSolver extends JFrame {
           resultado.append("SAT\n\n");
           resultado.append("¡El problema es satisfacible!\n\n");
 
-          // Asignación de variables
           resultado.append("Asignación de variables:\n");
           StringBuilder asignacion = new StringBuilder();
           for (int i = 1; i <= numVarsFinal; i++) {
@@ -1197,7 +1138,6 @@ public class MinntSATSolver extends JFrame {
           }
           resultado.append(asignacion.toString()).append("\n\n");
 
-          // Tabla de verdad
           resultado.append("Tabla de verdad:\n");
           for (int i = 1; i <= numVarsFinal; i++) {
             resultado.append(String.format("%d = %s\n", i, solucionFinal[i] ? "VERDADERO" : "FALSO"));
@@ -1236,7 +1176,6 @@ public class MinntSATSolver extends JFrame {
     }
   }
 
-  // Parsear formato DIMACS a lista de arreglos de enteros
   private List<int[]> parsearDimacsAListaInt(String dimacs) {
     List<int[]> clausulas = new ArrayList<>();
 
@@ -1267,7 +1206,6 @@ public class MinntSATSolver extends JFrame {
     return clausulas;
   }
 
-  // Implementación del solver DPLL
   private boolean[] resolverDPLL(List<int[]> listaClausulas, int numVars) {
     List<int[]> clausulas = new ArrayList<>(listaClausulas);
     Boolean[] asignacion = new Boolean[numVars + 1];
@@ -1317,7 +1255,6 @@ public class MinntSATSolver extends JFrame {
 
     if (clausulasSimplificadas.isEmpty()) return true;
 
-    // Propagación de unidades
     for (int[] clausula : clausulasSimplificadas) {
       if (clausula.length == 1) {
         int literalUnidad = clausula[0];
@@ -1337,7 +1274,6 @@ public class MinntSATSolver extends JFrame {
       }
     }
 
-    // Eliminación de literales puros
     Map<Integer, Integer> polaridadLiteral = new HashMap<>();
 
     for (int[] clausula : clausulasSimplificadas) {
@@ -1367,7 +1303,6 @@ public class MinntSATSolver extends JFrame {
       }
     }
 
-    // Heurística de frecuencia
     Map<Integer, Integer> frecuenciaVariable = new HashMap<>();
 
     for (int[] clausula : clausulasSimplificadas) {
@@ -1490,4 +1425,5 @@ public class MinntSATSolver extends JFrame {
     });
   }
 }
+
 
