@@ -378,32 +378,24 @@ public class MinntSATSolver extends JFrame {
     btn.setContentAreaFilled(false);
     btn.setOpaque(false);
     btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    btn.setPreferredSize(new Dimension(28, 24));
+    btn.setPreferredSize(new Dimension(32, 28));
     btn.setBorder(BorderFactory.createEmptyBorder());
+    btn.setFont(new Font(FUENTE_UI, Font.BOLD, 14));
     btn.setIcon(new Icon() {
       public void paintIcon(Component c, Graphics g, int x, int y) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Efectos neumórficos para MINNT
+        // Fondo neumórfico y sombra
         if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
           Color fondo = temaActual == Tema.MINNT_OSCURO ? MINNT_OSCURO_PANEL : MINNT_CLARO_PANEL;
-          Color sombra1 = temaActual == Tema.MINNT_OSCURO ? new Color(0, 0, 0, 40) : new Color(0, 0, 0, 20);
-          Color sombra2 = temaActual == Tema.MINNT_OSCURO ? new Color(255, 255, 255, 10) : new Color(255, 255, 255, 60);
-
-          // Fondo del botón
+          g2.setColor(new Color(0,0,0,32));
+          g2.fillRoundRect(x+2, y+2, 24, 20, 10, 10);
           g2.setColor(fondo);
-          g2.fillRoundRect(x+2, y+2, 20, 16, 8, 8);
-
-          // Sombra externa
-          g2.setColor(sombra1);
-          g2.fillRoundRect(x+3, y+3, 20, 16, 8, 8);
-
-          // Luz interna
-          g2.setColor(sombra2);
-          g2.fillRoundRect(x+1, y+1, 20, 16, 8, 8);
+          g2.fillRoundRect(x+1, y+1, 24, 20, 10, 10);
         }
 
+        // Icono dibujado
         if (tipo.equals("Copiar")) {
           g2.setColor(temaActual == Tema.OSCURO || temaActual == Tema.MINNT_OSCURO ? Color.WHITE : Color.BLACK);
           g2.drawRect(x+8, y+8, 8, 8);
@@ -416,8 +408,8 @@ public class MinntSATSolver extends JFrame {
         }
         g2.dispose();
       }
-      public int getIconWidth() { return 24; }
-      public int getIconHeight() { return 20; }
+      public int getIconWidth() { return 28; }
+      public int getIconHeight() { return 24; }
     });
     return btn;
   }
@@ -637,90 +629,85 @@ public class MinntSATSolver extends JFrame {
     btn.setForeground(texto);
     btn.setFocusPainted(false);
     btn.setOpaque(true);
-    btn.setContentAreaFilled(true);
+    btn.setContentAreaFilled(false); // Para permitir el gradiente y sombra personalizados
     btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    btn.setFont(new Font(FUENTE_UI, Font.BOLD, 13)); // Fuente más moderna y legible
 
     // Remover listeners existentes
     for (MouseListener ml : btn.getMouseListeners()) {
       btn.removeMouseListener(ml);
     }
 
-    if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
-      // Estilo neumórfico
-      btn.setBorder(crearBordeNeumorphico(fondoBoton, true));
-      btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
-        @Override
-        public void paint(Graphics g, JComponent c) {
-          Graphics2D g2 = (Graphics2D) g.create();
-          g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    btn.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseEntered(MouseEvent e) {
+        btn.setBackground(hoverBoton);
+        btn.repaint();
+      }
+      @Override
+      public void mouseExited(MouseEvent e) {
+        btn.setBackground(fondoBoton);
+        btn.repaint();
+      }
+      @Override
+      public void mousePressed(MouseEvent e) {
+        btn.setBorder(BorderFactory.createLineBorder(borde.darker(), 2, true));
+      }
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        btn.setBorder(BorderFactory.createLineBorder(borde, 2, true));
+      }
+    });
 
-          // Fondo con gradiente sutil
-          GradientPaint gradiente = new GradientPaint(
-                  0, 0, fondoBoton.brighter(),
-                  0, c.getHeight(), fondoBoton.darker()
-          );
-          g2.setPaint(gradiente);
-          g2.fillRoundRect(2, 2, c.getWidth()-4, c.getHeight()-4, 16, 16);
+    // Apariencia personalizada según el tema
+    btn.setBorder(BorderFactory.createEmptyBorder(6, 18, 6, 18));
+    btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
+      @Override
+      public void paint(Graphics g, JComponent c) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-          // Borde interior brillante
-          g2.setColor(new Color(255, 255, 255, 30));
-          g2.drawRoundRect(3, 3, c.getWidth()-6, c.getHeight()-6, 14, 14);
+        int arc = 18;
+        int w = btn.getWidth();
+        int h = btn.getHeight();
 
-          super.paint(g2, c);
-          g2.dispose();
-        }
-      });
-
-      btn.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseEntered(MouseEvent e) {
-          btn.setBackground(hoverBoton);
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-          btn.setBackground(fondoBoton);
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-          // Efecto de presión
-          btn.setBorder(crearBordeNeumorphico(fondoBoton, false));
+        // Sombra exterior para MINNT
+        if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.MINNT_CLARO) {
+          g2.setColor(new Color(0,0,0,32));
+          g2.fillRoundRect(4, 4, w-8, h-8, arc, arc);
         }
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
-          btn.setBorder(crearBordeNeumorphico(fondoBoton, true));
+        // Gradiente moderno para fondo
+        GradientPaint gp;
+        if (temaActual == Tema.MINNT_OSCURO || temaActual == Tema.OSCURO) {
+          gp = new GradientPaint(0, 0, fondoBoton.brighter(), 0, h, fondoBoton.darker());
+        } else {
+          gp = new GradientPaint(0, 0, fondoBoton, 0, h, hoverBoton);
         }
-      });
-    } else {
-      // Estilo VS Code
-      btn.setBorder(BorderFactory.createCompoundBorder(
-              BorderFactory.createLineBorder(borde, 1),
-              BorderFactory.createEmptyBorder(4, 12, 4, 12)
-      ));
-      btn.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        g2.setPaint(gp);
+        g2.fillRoundRect(0, 0, w, h, arc, arc);
 
-      btn.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseEntered(MouseEvent e) {
-          btn.setBackground(hoverBoton);
-          btn.setBorder(BorderFactory.createCompoundBorder(
-                  BorderFactory.createLineBorder(hoverBoton, 1),
-                  BorderFactory.createEmptyBorder(4, 12, 4, 12)
-          ));
-        }
+        // Borde moderno
+        g2.setColor(borde);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(0, 0, w-1, h-1, arc, arc);
 
-        @Override
-        public void mouseExited(MouseEvent e) {
-          btn.setBackground(fondoBoton);
-          btn.setBorder(BorderFactory.createCompoundBorder(
-                  BorderFactory.createLineBorder(borde, 1),
-                  BorderFactory.createEmptyBorder(4, 12, 4, 12)
-          ));
-        }
-      });
-    }
+        // Texto centrado y con sombra sutil
+        FontMetrics fm = btn.getFontMetrics(btn.getFont());
+        String text = btn.getText();
+        int tw = fm.stringWidth(text);
+        int th = fm.getAscent();
+        int tx = (w - tw) / 2;
+        int ty = (h + th) / 2 - 3;
+
+        g2.setColor(new Color(0,0,0,40));
+        g2.drawString(text, tx+1, ty+1);
+        g2.setColor(btn.getForeground());
+        g2.drawString(text, tx, ty);
+
+        g2.dispose();
+      }
+    });
   }
 
   private void aplicarColoresMenu(JMenuBar barraMenu, Color fondo, Color texto, Color acento) {
@@ -1421,7 +1408,6 @@ public class MinntSATSolver extends JFrame {
     return false;
   }
 
-  // Componente de números de línea para el editor con efectos neumórficos
   static class VistaNumerosLinea extends JComponent implements DocumentListener {
     private final JTextArea areaTexto;
     private FontMetrics metricaFuente;
@@ -1454,7 +1440,6 @@ public class MinntSATSolver extends JFrame {
       Graphics2D g2 = (Graphics2D) g.create();
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-      // Fondo con gradiente sutil
       GradientPaint gradiente = new GradientPaint(
               0, 0, colorFondo.brighter(),
               getWidth(), 0, colorFondo
@@ -1462,7 +1447,6 @@ public class MinntSATSolver extends JFrame {
       g2.setPaint(gradiente);
       g2.fillRect(clip.x, clip.y, clip.width, clip.height);
 
-      // Línea separadora con efecto
       g2.setColor(new Color(255, 122, 0, 40));
       g2.setStroke(new BasicStroke(2));
       g2.drawLine(getWidth()-2, clip.y, getWidth()-2, clip.y + clip.height);
@@ -1485,7 +1469,6 @@ public class MinntSATSolver extends JFrame {
           int x = getWidth() - MARGEN - metricaFuente.stringWidth(numLinea);
           int y = rectLinea.y + metricaFuente.getAscent();
 
-          // Sombra de texto para efecto 3D
           g2.setColor(new Color(0, 0, 0, 30));
           g2.drawString(numLinea, x+1, y+1);
 
@@ -1508,7 +1491,6 @@ public class MinntSATSolver extends JFrame {
     public void changedUpdate(DocumentEvent e) { repaint(); }
   }
 
-  // Método principal
   public static void main(String[] args) {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
