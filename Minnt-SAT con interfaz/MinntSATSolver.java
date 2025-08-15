@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MinntSATSolver extends JFrame {
 
-  // Componentes de la interfaz
   private JTextArea editor;
   private JTextArea areaResultado;
   private JProgressBar barraProgreso;
@@ -24,11 +23,9 @@ public class MinntSATSolver extends JFrame {
   private JButton botonResolver;
   private AtomicBoolean cancelarSolicitado = new AtomicBoolean(false);
 
-  // Tema y paletas
   private enum Tema { OSCURO, CLARO, MINNT_OSCURO, MINNT_CLARO }
   private Tema temaActual = Tema.MINNT_OSCURO;
 
-  // Colores tema VS Code Oscuro
   private static final Color VS_OSCURO_FONDO = Color.decode("#1e1e1e");
   private static final Color VS_OSCURO_PANEL = Color.decode("#252526");
   private static final Color VS_OSCURO_BARRA = Color.decode("#333333");
@@ -40,7 +37,6 @@ public class MinntSATSolver extends JFrame {
   private static final Color VS_OSCURO_BOTON = Color.decode("#0e639c");
   private static final Color VS_OSCURO_BOTON_HOVER = Color.decode("#1177bb");
 
-  // Colores tema VS Code Claro
   private static final Color VS_CLARO_FONDO = Color.decode("#ffffff");
   private static final Color VS_CLARO_PANEL = Color.decode("#f3f3f3");
   private static final Color VS_CLARO_BARRA = Color.decode("#f8f8f8");
@@ -52,7 +48,6 @@ public class MinntSATSolver extends JFrame {
   private static final Color VS_CLARO_BOTON = Color.decode("#0078d4");
   private static final Color VS_CLARO_BOTON_HOVER = Color.decode("#106ebe");
 
-  // Tema MINNT (neumorfismo naranja)
   private static final Color MINNT_OSCURO_FONDO = Color.decode("#111217");
   private static final Color MINNT_OSCURO_PANEL = Color.decode("#13161a");
   private static final Color MINNT_OSCURO_TEXTO = Color.decode("#e6e6e6");
@@ -67,13 +62,11 @@ public class MinntSATSolver extends JFrame {
   private static final Color MINNT_CLARO_LINEA_FONDO = Color.decode("#f0ede9");
   private static final Color MINNT_CLARO_LINEA_TEXTO = Color.decode("#6b6b6b");
 
-  // Fuentes (estilo VS Code)
   private static final String FUENTE_CODIGO = "Consolas";
   private static final String FUENTE_UI = "Segoe UI";
   private static final int TAM_CODIGO = 14;
   private static final int TAM_UI = 13;
 
-  // Referencia al menú de tema
   private JMenu menuTema;
 
   public MinntSATSolver() {
@@ -94,12 +87,10 @@ public class MinntSATSolver extends JFrame {
     Font fuenteUI = new Font(FUENTE_UI, Font.PLAIN, TAM_UI);
     Font fuenteCodigo = new Font(FUENTE_CODIGO, Font.PLAIN, TAM_CODIGO);
 
-    // BARRA DE MENÚ (estilo VS Code)
     JMenuBar barraMenu = new JMenuBar();
     barraMenu.setFont(fuenteUI);
     barraMenu.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
 
-    // Menú Archivo
     JMenu menuArchivo = new JMenu("Archivo");
     menuArchivo.setFont(fuenteUI);
     JMenuItem abrirItem = new JMenuItem("Abrir CNF/TXT...");
@@ -113,7 +104,6 @@ public class MinntSATSolver extends JFrame {
     salirItem.addActionListener(e -> alCerrar());
     menuArchivo.add(salirItem);
 
-    // Menú Edición
     JMenu menuEdicion = new JMenu("Edición");
     menuEdicion.setFont(fuenteUI);
     JMenuItem copiarItem = new JMenuItem("Copiar resultado");
@@ -122,7 +112,6 @@ public class MinntSATSolver extends JFrame {
     copiarItem.addActionListener(e -> copiarResultadoAlPortapapeles());
     menuEdicion.add(copiarItem);
 
-    // Menú Vista
     JMenu menuVista = new JMenu("Vista");
     menuVista.setFont(fuenteUI);
 
@@ -153,7 +142,6 @@ public class MinntSATSolver extends JFrame {
 
     menuVista.add(menuTema);
 
-    // Menú Ejecutar
     JMenu menuEjecutar = new JMenu("Ejecutar");
     menuEjecutar.setFont(fuenteUI);
     JMenuItem resolverItem = new JMenuItem("Resolver SAT");
@@ -1502,3 +1490,4 @@ public class MinntSATSolver extends JFrame {
     });
   }
 }
+
